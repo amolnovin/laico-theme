@@ -1,0 +1,237 @@
+# لایکو دیزاین (LAICO DESIGN)
+
+قالب **سایت ایستا** برای استودیو معماری داخلی و سیستم آشپزخانه لوکس؛ راست‑به‑چپ (RTL)،
+دوزبانهٔ فارسی/انگلیسی و بدون هیچ وابستگی، فریمورک یا مرحلهٔ build.
+
+این مخزن شامل کدهای استخراج‌شده از فایل `laico.zip` (دانلودشده از Google Drive)،
+اطلاعات پروژه، یک اسکریپت ممیزی و **[گزارش بررسی قالب](REVIEW.md)** است.
+
+---
+
+## ۱. منبع فایل
+
+| مورد | مقدار |
+| --- | --- |
+| نام فایل در Google Drive | `laico.zip` |
+| شناسهٔ فایل در Drive | `1nyH_kNjPT3GbL2ZNzPB3SgnHKtaNyJi2` |
+| تاریخ آخرین تغییر در Drive | 2026‑10‑21 |
+| تاریخ دانلود | 2026‑10‑26 |
+| حجم | 2,689,105 بایت (حدود ۲٫۶ مگابایت) |
+| MD5 | `56768ba15707745489fbc68e99ca9b23` |
+| محتوای آرشیو | ۵۷ ورودی (۵۱ فایل + ۶ پوشه) در پوشهٔ `laico/` |
+| نسخهٔ اصلی آرشیو در این مخزن | [`archive/laico.zip`](archive/laico.zip) |
+
+فایل‌های داخل پوشهٔ `laico/` بدون تغییر در ریشهٔ مخزن قرار گرفته‌اند تا سایت مستقیماً
+از root سرو شود (مناسب GitHub Pages). آرشیو اصلی برای راستی‌آزمایی نگه داشته شده است.
+
+---
+
+## ۲. پشتهٔ فنی
+
+| لایه | تکنولوژی |
+| --- | --- |
+| نشانه‌گذاری | HTML5، ۲۱ صفحه، `<html lang="fa" dir="rtl">` |
+| استایل | CSS3 خالص: متغیرها، logical properties (`inset-inline`, `padding-inline`)، Grid/Flexbox، `clamp()`، breakpointهای 1180/800/720px، حالت چاپ و `prefers-reduced-motion` |
+| رفتار | JavaScript خالص (IIFE، بدون کتابخانه): ۴۳۱ خط در `js/main.js` |
+| فونت | ۸ فایل `woff2` محلی: Vazirmatn (۵ وزن) + Outfit (۳ وزن)، همراه `font-display: swap` |
+| تصاویر | ۱۹ فایل JPG محلی، ۱ favicon SVG، آیکون‌های شبکه‌های اجتماعی به صورت inline SVG |
+| زیرساخت | نیازی به npm/build ندارد؛ فقط یک وب سرور استاتیک |
+
+هیچ درخواستی به CDN، فونت گوگل، آنالیتیکس یا سرویس ثالث انجام نمی‌شود.
+
+---
+
+## ۳. ساختار مخزن
+
+```text
+.
+├── index.html                 # صفحهٔ اصلی (نمونهٔ کامل همهٔ بخش‌ها)
+├── about.html                 # دربارهٔ ما
+├── services.html              # خدمات
+├── projects.html              # آرشیو پروژه‌ها + فیلتر
+├── project-{aftab,haraz,acajou,darya}.html
+├── kitchen.html, living.html, bath.html, cafe.html   # چهار مجموعه
+├── studio.html, systems.html, process.html, materials.html, showroom.html
+├── journal.html               # مجله/مقالات
+├── contact.html               # تماس + فرم
+├── privacy.html, cookies.html # صفحات حقوقی
+├── css/styles.css             # تمام استایل‌ها (۱٬۷۱۵ خط)
+├── js/main.js                 # دیکشنری دوزبانه + تعاملات (۴۳۱ خط)
+├── assets/
+│   ├── fonts/                 # ۸ فایل woff2
+│   ├── images/                # ۱۹ فایل JPG
+│   └── favicon.svg
+├── archive/laico.zip          # آرشیو اصلی دریافتی از Drive
+├── tools/audit.py             # اسکریپت ممیزی بدون وابستگی
+├── REVIEW.md                  # گزارش کامل بررسی قالب
+└── README.md                  # همین فایل
+```
+
+---
+
+## ۴. صفحات (۲۱ صفحه)
+
+| گروه | فایل‌ها |
+| --- | --- |
+| اصلی و منو | `index.html`, `services.html`, `projects.html`, `journal.html`, `about.html`, `contact.html` |
+| مجموعه‌ها | `kitchen.html`, `living.html`, `bath.html`, `cafe.html` |
+| پروژه‌های نمونه | `project-aftab.html`, `project-haraz.html`, `project-acajou.html`, `project-darya.html` |
+| استودیو/سیستم | `studio.html`, `systems.html`, `process.html`, `materials.html`, `showroom.html` |
+| حقوقی | `privacy.html`, `cookies.html` |
+
+هر صفحه شامل `<title>` و `meta description` منحصربه‌فرد، `og:title`، `og:description`،
+`theme-color`، پیش‌بارگذاری ۲ فونت و هدر/فوتر مشترک است. وضعیت منوی فعال از روی
+`data-page` در `<body>` و `data-nav` روی لینک‌ها تعیین می‌شود.
+
+---
+
+## ۵. اجرای محلی
+
+```bash
+python3 -m http.server 8000 --bind 0.0.0.0
+# سپس: http://localhost:8000
+```
+
+یا با هر سرور استاتیک دیگر (nginx، `npx serve`، Live Server در VS Code). چون تمام مسیرها
+نسبی هستند، سایت از یک زیرپوشه هم کار می‌کند.
+
+**GitHub Pages:** تنظیمات مخزن → Pages → Deploy from a branch → شاخه و پوشهٔ `/` (root).
+
+> نیازی به `npm install` نیست. تنها ابزار سمت سرور Python 3 برای `tools/audit.py`
+> و Node.js برای `node --check` (اختیاری) است.
+
+---
+
+## ۶. معماری کد
+
+- **طراحی سیستم:** رنگ‌ها، فونت‌ها، فاصله‌ها و ارتفاع هدر در `:root` متمرکز شده است.
+- **جلوگیری از پرش زبان:** یک اسکریپت کوتاه inline در `<head>` زبان ذخیره‌شده در
+  `localStorage["laico-lang"]` را قبل از رنگ‌آمیزی صفحه اعمال می‌کند.
+- **`js/main.js`:** دیکشنری `fa`/`en` (هرکدام ۹۸ کلید، ۸۰ کلید در صفحات استفاده شده)،
+  تغییر زبان، هدر چسبان، منوی موبایل، `aria-current`، شمارندهٔ آمار، select سفارشی،
+  فیلتر پروژه‌ها و اعتبارسنجی فرم.
+- **ترجمه:** متن‌ها با `data-i18n`، `data-i18n-placeholder`، `data-i18n-aria` و
+  جفت‌های `<span class="lang-fa">` / `<span class="lang-en" hidden>` انجام می‌شود؛
+  عنوان صفحه از `data-title-fa` / `data-title-en` خوانده می‌شود.
+- **فیلتر پروژه:** دکمه‌های `data-filter` و کارت‌های `data-kind` در `projects.html`.
+
+---
+
+## ۷. فرم‌های تماس — نکتهٔ مهم پیش از انتشار
+
+چهار صفحه (`index.html`، `showroom.html`، `about.html`، `contact.html`) فرم دارند.
+این فرم‌ها **فقط سمت کاربر** هستند: پس از اعتبارسنجی، اطلاعات در
+`localStorage["laico-requests"]` ذخیره و پیام «درخواست شما ثبت شد» نمایش داده می‌شود؛
+هیچ داده‌ای به سرور ارسال نمی‌شود. `privacy.html` و `cookies.html` همین موضوع را توضیح
+می‌دهند، ولی این دو صفحه در هیچجا لینک نشده‌اند. برای استفادهٔ واقعی حتماً فرم را به یک
+API/سرویس ایمیل متصل کنید — جزئیات در [REVIEW.md](REVIEW.md).
+
+---
+
+## ۸. بررسی کیفیت
+
+```bash
+python3 tools/audit.py            # لینک‌ها، دارایی‌ها، idهای تکراری، کلیدهای i18n، هشدارها
+python3 tools/audit.py --strict   # هشدارها را هم به عنوان خطا برمی‌گرداند
+node --check js/main.js           # صحت نحوی جاوااسکریپت
+npx html-validate "*.html"        # اعتبارسنجی HTML (ابزار خارجی، اختیاری)
+```
+
+وضعیت فعلی `tools/audit.py`: **۰ خطا، ۷ هشدار** (صفحات یتیم، `h1` ناموجود،
+`alt`/ابعاد تصاویر و مقادیر نمونه). خلاصهٔ کامل یافته‌ها، اولویت‌ها و پیشنهادهای اصلاحی
+در **[REVIEW.md](REVIEW.md)** آمده است.
+
+---
+
+## ۹. مالکیت و مجوز
+
+منبع قالب، فایل `laico.zip` دریافتی از Google Drive است و فایل `LICENSE` یا اعلام مجوزی
+همراه آن نبوده است. پیش از انتشار تجاری، مالکیت محتوا/تصاویر و مجوز فونت‌ها و طرح را
+با صاحب اثر مشخص کنید.
+
+
+---
+
+## ۱۰. بازطراحی صفحهٔ خدمات (`services.html`)
+
+صفحهٔ خدمات بر اساس تصاویر مرجع پیوستشده ([`reference/`](reference/)) بازسازی شد،
+بدون تغییر در ساختار کلی قالب: هدر، فوتر، `css/styles.css`، `js/main.js` و سایر
+صفحات دستنخورده باقی ماندند.
+
+**تغییرات:**
+
+| مورد | توضیح |
+| --- | --- |
+| تصویر هیرو | `assets/images/services-hero.jpg` — برش تمیز از `خدمات.png` / `image-1.png` بدون متن جاسازیشده |
+| ۵ بخش خدمات | ردیفهای دوسوتونی یکدرمیان (عکس راست/چپ) با شمارهٔ ۱ تا ۵، عنوان، توضیح و دکمهٔ «مشاهده پروژه ها» — بر اساس `image-2..6.png` |
+| نوار «چرا لایکودیزاین؟» | زمینهٔ سرمهای `#020c3b` + تصویر `services-why.jpg` — بر اساس `image-7.png` |
+| فرم مشاوره | پنل سرمهای سمت راست + فیلدهای خاکستری سمت چپ — بر اساس `image-8.png`؛ همچنان به هندلر `js/main.js` متصل است |
+| تصاویر جدید | ۷ فایل JPG در `assets/images/services-*.jpg` (قابل بازتولید با `tools/extract-service-images.py`) |
+| استایل | فقط [`css/services.css`](css/services.css) — فایل اختصاصی همان صفحه |
+| ریسپانسیو | دسکتاپ (دو ستون) → ≤1000px تکستون با عکس در بالا → ≤640px تایپوگرافی و فاصلههای موبایل |
+| دوزبانگی | تمام متنهای جدید به صورت جفت `lang-fa` / `lang-en` هستند؛ سوییچ EN در این صفحه کامل کار میکند |
+| دسترسپذیری | ۱ عدد `<h1>`، `alt` توصیفی و `width`/`height` برای همهٔ تصاویر جدید، `<label>` واقعی برای فیلدها، قانون `[hidden]` صریح برای فرم و پیام موفقیت |
+
+**تأیید شده با مرورگر headless:** عرضهای ۳۲۰، ۳۶۰، ۳۹۰، ۷۶۸، ۱۰۲۴، ۱۴۴۰ و ۱۹۲۰ پیکسل،
+بدون سرریز افقی (`scrollWidth == clientWidth`) در هیچکدام. پیشنمایشها:
+[`reference/preview-desktop.jpg`](reference/preview-desktop.jpg)،
+[`reference/preview-tablet.jpg`](reference/preview-tablet.jpg)،
+[`reference/preview-mobile.jpg`](reference/preview-mobile.jpg).
+
+### انتشار (Release)
+
+[صفحهٔ ریلیز `v1.0.0-services`](https://github.com/amolnovin/licodesign/releases/tag/v1.0.0-services)
+شامل لینک دانلود فایل ZIP است:
+
+- [`laico-design-services-v1.0.0.zip`](release/laico-design-services-v1.0.0.zip) —
+  بستهٔ تمیز و قابل استقرار (همچنین از صفحهٔ ریلیز قابل دانلود است).
+- بستهٔ خودکار `Source code (zip)` گیتهاب نیز همان قالب بهروزرسانیشده را دارد.
+- ساخت مجدد ZIP: `python3 tools/build-release-zip.py laico-design-services-v1.0.0.zip`.
+
+> نکته: همانند تصاویر مرجع، بخش ۴ (کافه و رستوران) از تصویر سالن ورزشی و بخش ۵
+> (آشپزخانه و فضای مسکونی) از تصویر مجتمع تفریحی استفاده میکند؛ در صورت تمایل میتوان
+> این دو JPG را با عکسهای واقعی جایگزین کرد.
+
+
+---
+
+## ۱۱. بازطراحی صفحهٔ پروژهها (`projects.html`)
+
+صفحهٔ پروژهها بر اساس تصاویر مرجع پیوستشده ([`reference/projects/`](reference/projects/))
+بازسازی شد. همانند مرحلهٔ قبل، ساختار کلی قالب دستنخورده ماند: هدر، فوتر،
+`css/styles.css` و `js/main.js` تغییری نکردند.
+
+**تغییرات:**
+
+| مورد | توضیح |
+| --- | --- |
+| هیرو (`image-1`) | نوار سرمهای `#020c3b` با عنوان «همه پروژهها، یک استاندارد ساخت»، توضیح و شمارندهٔ ‎+۱۰۰ |
+| فیلترها (`image-2`) | جستجو، سه تب دستهبندی (همه/مسکونی/تجاری)، ۵ دکمهٔ فضا و سه select بومی (موقعیت/سال/متراژ) — **همه فعال و قابل استفاده** |
+| نتایج (`image-3`) | جدول ۳×۲ کارت پروژه با اورلی تیره، دکمهٔ «مشاهده پروژه»، عنوان و متراژ؛ شمارندهٔ نتایج و پیام حالت خالی |
+| نوار و فرم (`image-4`, `image-5`) | دقیقاً همان مؤلفههای صفحهٔ خدمات — از `css/services.css` و `services-why.jpg` استفاده مجدد شده است |
+| تصویر جدید | `assets/images/projects-card.jpg` — عکس تمیز مجتمع تجاری شب (`tools/extract-project-images.py`) |
+| فایلهای اختصاصی | [`css/projects.css`](css/projects.css) + [`js/projects.js`](js/projects.js) — فقط همین صفحه آنها را بارگذاری میکند |
+| ریسپانسیو | دسکتاپ ۳ ستون → ≤1000px دو ستون / فیلترها پشت سر هم → ≤640px تکستون، دکمهها و selectها تمامعرض |
+| دوزبانگی | تمام متنها FA/EN (شامل optionها، placeholder و شمارنده)؛ سوییچ زبان بدون متن فارسی باقیمانده |
+| دسترسپذیری | ۱ عدد `<h1>`، `alt` و ابعاد برای همهٔ تصاویر، `<select>` بومی، `<label>` واقعی، قانون `[hidden]` صریح |
+
+**منطق فیلتر (`js/projects.js`):** جستجو بر اساس عنوان، فیلتر دستهبندی و فضا بهصورت
+دکمهای، و فیلتر شهر/سال/متراژ از روی `data-*` کارتها. شمارندهٔ نتایج و پیام
+«پروژهای یافت نشد» بهصورت زنده بهروزرسانی میشود.
+
+**تأیید شده با مرورگر headless:** عرضهای ۳۲۰، ۳۶۰، ۳۹۰، ۷۶۸، ۱۰۲۴ و ۱۴۴۰ پیکسل —
+بدون سرریز افقی؛ `html-validate` و `tools/audit.py` روی صفحه **۰ خطا**. پیشنمایشها:
+[`reference/projects/preview-desktop.jpg`](reference/projects/preview-desktop.jpg)،
+[`reference/projects/preview-tablet.jpg`](reference/projects/preview-tablet.jpg)،
+[`reference/projects/preview-mobile.jpg`](reference/projects/preview-mobile.jpg).
+
+### انتشار (Release)
+
+[صفحهٔ ریلیز `v1.1.0-projects`](https://github.com/amolnovin/licodesign/releases/tag/v1.1.0-projects)
+شامل لینک دانلود [`laico-design-projects-v1.1.0.zip`](release/laico-design-projects-v1.1.0.zip)
+است؛ بستهٔ خودکار `Source code (zip)` گیتهاب نیز همان قالب کامل (هر دو صفحهٔ
+بازطراحیشده) را دارد. ساخت مجدد: `python3 tools/build-release-zip.py`.
+
+> نکته: در `image-3.png` هر ۶ کارت یک عکس نمونه دارند. در پیادهسازی نهایی همان
+> عکس تمیز برای کارت «مجتمع تجاری آفتاب» و عکسهای واقعی پروژههای موجود قالب
+> برای ۵ کارت دیگر استفاده شده تا آرشیو قابل استفاده باشد.
