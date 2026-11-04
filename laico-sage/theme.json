@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "custom": true,
+      "defaultPalette": false,
+      "palette": [
+        { "name": "سرمه‌ای لایکو (برند)", "slug": "navy", "color": "#0b1d33" },
+        { "name": "سرمه‌ای ملایم", "slug": "ink-soft", "color": "#1a3148" },
+        { "name": "متن اصلی", "slug": "body", "color": "#3d5166" },
+        { "name": "خاکستری متن فرعی", "slug": "muted", "color": "#6d7e90" },
+        { "name": "پس‌زمینه روشن", "slug": "bg-soft", "color": "#f5f6f8" },
+        { "name": "خط جداکننده", "slug": "line", "color": "#e4e7eb" },
+        { "name": "سفید", "slug": "white", "color": "#ffffff" }
+      ]
+    },
+    "layout": {
+      "contentSize": "860px",
+      "wideSize": "1240px"
+    },
+    "spacing": {
+      "units": ["px", "em", "rem", "vh", "vw", "%"]
+    },
+    "typography": {
+      "customFontSize": true,
+      "fontFamilies": [
+        {
+          "name": "وزیرمتن (Vazirmatn)",
+          "slug": "vazirmatn",
+          "fontFamily": "Vazirmatn, 'Segoe UI', Tahoma, sans-serif"
+        },
+        {
+          "name": "Outfit (لاتین)",
+          "slug": "outfit",
+          "fontFamily": "Outfit, Vazirmatn, sans-serif"
+        }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#ffffff",
+      "text": "#3d5166"
+    },
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--vazirmatn)",
+      "fontSize": "16px",
+      "lineHeight": "1.85"
+    }
+  }
+}

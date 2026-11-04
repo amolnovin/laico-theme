@@ -1,0 +1,94 @@
+/* ==========================================================================
+   WordPress & Gutenberg Integration Layer for Laico Design (Sage)
+   ========================================================================== */
+
+/* Offset fixed header when WordPress Admin Bar is visible */
+body.admin-bar .site-header {
+  top: 32px;
+}
+
+@media (max-width: 782px) {
+  body.admin-bar .site-header {
+    top: 46px;
+  }
+}
+
+/* WordPress core pagination links inside `.pager` */
+.pager .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line, rgba(11, 29, 51, 0.14));
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: var(--ink, #0b1d33);
+  text-decoration: none;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.pager .page-numbers:hover {
+  border-color: var(--navy, #0b1d33);
+}
+
+.pager .page-numbers.current {
+  background: var(--navy, #0b1d33);
+  border-color: var(--navy, #0b1d33);
+  color: #ffffff;
+}
+
+/* Gutenberg Content Compatibility inside `.ar-body`, `.pd-text`, and `.prose` */
+.ar-body figure.wp-block-image,
+.pd-text figure.wp-block-image,
+.prose figure.wp-block-image {
+  margin: 2rem 0;
+}
+
+.ar-body figure.wp-block-image img,
+.pd-text figure.wp-block-image img,
+.prose figure.wp-block-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.ar-body figcaption,
+.prose figcaption {
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
+  color: var(--muted, #6d7e90);
+  text-align: center;
+}
+
+.alignwide {
+  max-width: min(1240px, 92vw);
+  margin-inline: auto;
+}
+
+.alignfull {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+/* Async Form Submission Loading State */
+form[data-form].is-submitting button[type="submit"] {
+  opacity: 0.68;
+  cursor: progress;
+  pointer-events: none;
+}
+
+.form-server-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: rgba(190, 42, 42, 0.08);
+  border: 1px solid rgba(190, 42, 42, 0.28);
+  color: #a12020;
+  font-size: 0.88rem;
+}

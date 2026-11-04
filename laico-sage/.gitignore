@@ -1,0 +1,5 @@
+/node_modules
+/vendor
+/public/hot
+.DS_Store
+Thumbs.db
