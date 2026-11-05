@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html {!! ($themeOpt['default_language'] ?? 'fa') === 'en' ? 'lang="en" dir="ltr"' : 'lang="fa" dir="rtl"' !!}>
+@php($isEnglishActive = \App\Services\ThemeOptions::isEnglishEnabled() && ($themeOpt['default_language'] ?? 'fa') === 'en')
+<html {!! $isEnglishActive ? 'lang="en" dir="ltr"' : 'lang="fa" dir="rtl"' !!}>
 <head>
   <meta charset="<?php bloginfo('charset'); ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -35,7 +35,8 @@ final class ThemeOptions
             'logo_url' => '',
             'favicon_url' => '',
             'default_language' => 'fa',
-            'enable_lang_switcher' => true,
+            'enable_english' => false,
+            'enable_lang_switcher' => false,
             'phone_primary' => '۰۹۱۲۰۸۹۸۹۳۸',
             'phone_primary_tel' => '+989120898938',
             'phone_secondary' => '',
@@ -161,13 +162,23 @@ final class ThemeOptions
     }
 
     /**
+     * Whether English language support & FA/EN switcher are enabled in Theme Settings.
+     */
+    public static function isEnglishEnabled(): bool
+    {
+        $all = self::all();
+        return ! empty($all['enable_english']);
+    }
+
+    /**
      * Retrieve a single option key (with compatibility aliases).
      */
     public static function get(string $key, mixed $fallback = null): mixed
     {
         $aliases = [
             'default_lang' => 'default_language',
-            'enable_bilingual' => 'enable_lang_switcher',
+            'enable_bilingual' => 'enable_english',
+            'enable_lang_switcher' => 'enable_english',
             'phone_raw' => 'phone_primary_tel',
             'phone_display_fa' => 'phone_primary',
             'address_full_fa' => 'address_fa',
@@ -256,6 +267,16 @@ final class ThemeOptions
             } else {
                 $clean[$key] = sanitize_text_field((string) $rawVal);
             }
+        }
+
+        if (array_key_exists('enable_english', $input)) {
+            $clean['enable_lang_switcher'] = (bool) $clean['enable_english'];
+        } elseif (array_key_exists('enable_lang_switcher', $input)) {
+            $clean['enable_english'] = (bool) $clean['enable_lang_switcher'];
+        }
+
+        if (! $clean['enable_english']) {
+            $clean['default_language'] = 'fa';
         }
 
         if ($clean['form_rate_limit_max'] < 1) {

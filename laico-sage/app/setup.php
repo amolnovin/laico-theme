@@ -30,14 +30,16 @@ add_action('wp_enqueue_scripts', static function (): void {
 
     $jsUrl = ViteAssets::entryJs('resources/js/app.js');
     if ($jsUrl !== null) {
+        $englishEnabled = ThemeOptions::isEnglishEnabled();
         wp_enqueue_script('laico-app', $jsUrl, [], null, true);
         wp_localize_script('laico-app', 'laicoConfig', [
             'restUrl' => esc_url_raw(rest_url('laico/v1/submissions')),
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('laico_public_form'),
-            'defaultLang' => (string) ThemeOptions::get('default_language', 'fa'),
-            'enableLangSwitcher' => (bool) ThemeOptions::get('enable_lang_switcher', true),
+            'defaultLang' => $englishEnabled ? (string) ThemeOptions::get('default_language', 'fa') : 'fa',
+            'enableLangSwitcher' => $englishEnabled,
             'prefetch' => (bool) ThemeOptions::get('opt_instant_page_prefetch', true),
+            'i18n' => \App\Support\Bilingual::dictionary(),
         ]);
     }
 }, 20);

@@ -137,8 +137,8 @@ final class OptimizationService
             return;
         }
 
-        $defaultLang = (string) ThemeOptions::get('default_language', 'fa');
-        $langSwitcher = (bool) ThemeOptions::get('enable_lang_switcher', true);
+        $langSwitcher = ThemeOptions::isEnglishEnabled();
+        $defaultLang = $langSwitcher ? (string) ThemeOptions::get('default_language', 'fa') : 'fa';
 
         echo '<script>(function(){try{if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("mo-on");}catch(e){}})();</script>' . "\n";
 
@@ -147,6 +147,8 @@ final class OptimizationService
                 '<script>(function(){try{var l=localStorage.getItem("laico-lang")||"%s";if(l==="en"){document.documentElement.lang="en";document.documentElement.dir="ltr";}else{document.documentElement.lang="fa";document.documentElement.dir="rtl";}}catch(e){}})();</script>' . "\n",
                 esc_js($defaultLang)
             );
+        } else {
+            echo '<script>(function(){try{document.documentElement.lang="fa";document.documentElement.dir="rtl";localStorage.removeItem("laico-lang");}catch(e){}})();</script>' . "\n";
         }
     }
 

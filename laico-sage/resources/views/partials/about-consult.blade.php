@@ -24,7 +24,7 @@
       <form data-form novalidate>
         <input type="hidden" name="source_page" value="{{ esc_attr($sourceLabel) }}">
         <input type="hidden" name="type" value="">
-        <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+        <div class="laico-hp-field" aria-hidden="true">
           <input type="text" name="website_url" tabindex="-1" autocomplete="off">
         </div>
 

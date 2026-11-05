@@ -2,6 +2,34 @@
    WordPress & Gutenberg Integration Layer for Laico Design (Sage)
    ========================================================================== */
 
+/* Prevent WordPress `body_class()` names (e.g. `archive`, `tag`, `projects`) from colliding with component rules */
+body.archive,
+body.tag,
+body.projects {
+  display: block;
+  position: static;
+  padding: 0;
+}
+
+/* Strict Horizontal Scroll / Overflow Lock (Desktop, Tablet & Mobile) */
+html,
+body,
+#main,
+.site-footer {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1024px) {
+  html,
+  body,
+  #main,
+  .site-footer {
+    overflow-x: hidden !important;
+    max-width: 100vw;
+  }
+}
+
 /* Offset fixed header when WordPress Admin Bar is visible */
 body.admin-bar .site-header {
   top: 32px;
@@ -11,6 +39,49 @@ body.admin-bar .site-header {
   body.admin-bar .site-header {
     top: 46px;
   }
+}
+
+/* Zero-overflow Honeypot Container inside Consultation Forms */
+form[data-form] {
+  position: relative;
+}
+
+.laico-hp-field {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+  inset-inline-start: 0;
+  top: 0;
+}
+
+/* Phone Field Alignment:
+   Placeholder ("شماره تماس") right-aligned in RTL, entered phone number left-aligned (LTR) */
+.about-consult-form input[name="phone"],
+.svc-form input[name="phone"] {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+html[dir="rtl"] .about-consult-form input[name="phone"]:placeholder-shown,
+html[dir="rtl"] .svc-form input[name="phone"]:placeholder-shown {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .about-consult-form input[name="phone"]::placeholder,
+html[dir="rtl"] .svc-form input[name="phone"]::placeholder {
+  direction: rtl;
+  text-align: right;
 }
 
 /* WordPress core pagination links inside `.pager` */
@@ -68,12 +139,9 @@ body.admin-bar .site-header {
 }
 
 .alignfull {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
 /* Async Form Submission Loading State */

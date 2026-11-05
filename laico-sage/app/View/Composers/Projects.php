@@ -20,6 +20,7 @@ final class Projects extends Composer
     protected static $views = [
         'archive-laico_project',
         'template-projects',
+        'partials.projects-archive',
         'single-laico_project',
     ];
 
@@ -38,10 +39,33 @@ final class Projects extends Composer
             }
         }
 
+        $initialFilters = [
+            'category' => 'all',
+            'space' => 'all',
+            'city' => 'all',
+        ];
+        if (is_tax(ProjectPostType::TAX_CATEGORY)) {
+            $term = get_queried_object();
+            if ($term instanceof \WP_Term) {
+                $initialFilters['category'] = $term->slug;
+            }
+        } elseif (is_tax(ProjectPostType::TAX_SPACE)) {
+            $term = get_queried_object();
+            if ($term instanceof \WP_Term) {
+                $initialFilters['space'] = $term->slug;
+            }
+        } elseif (is_tax(ProjectPostType::TAX_CITY)) {
+            $term = get_queried_object();
+            if ($term instanceof \WP_Term) {
+                $initialFilters['city'] = $term->slug;
+            }
+        }
+
         return [
             'hero' => Hero::resolve('projects'),
             'projectsList' => self::queryAllProjects(),
             'filterTerms' => self::collectFilterTerms(),
+            'initialFilters' => $initialFilters,
         ];
     }
 
@@ -234,7 +258,7 @@ final class Projects extends Composer
      */
     public static function collectFilterTerms(): array
     {
-        $mapTerms = static function (string $tax): array {
+        $mapTerms = static function (string $tax, array $preferredSlugs = []): array {
             $terms = get_terms(['taxonomy' => $tax, 'hide_empty' => true]);
             if (is_wp_error($terms) || ! is_array($terms)) {
                 return [];
@@ -248,22 +272,30 @@ final class Projects extends Composer
                     'en' => $en,
                 ];
             }
+            if (! empty($preferredSlugs)) {
+                $rank = array_flip($preferredSlugs);
+                usort($out, static function (array $a, array $b) use ($rank): int {
+                    $ra = $rank[$a['slug']] ?? 999;
+                    $rb = $rank[$b['slug']] ?? 999;
+                    return $ra <=> $rb;
+                });
+            }
             return $out;
         };
 
-        // Distinct years across published projects
+        // Distinct years across published projects (ascending like projects.html: 1402, 1403, 1404)
         global $wpdb;
         $yearsRaw = $wpdb->get_col($wpdb->prepare(
             "SELECT DISTINCT pm.meta_value FROM {$wpdb->postmeta} pm
              INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
              WHERE pm.meta_key = %s AND p.post_type = %s AND p.post_status = 'publish' AND pm.meta_value <> ''
-             ORDER BY pm.meta_value DESC",
+             ORDER BY pm.meta_value ASC",
             '_laico_year',
             ProjectPostType::POST_TYPE
         ));
 
         $years = [];
-        foreach (($yearsRaw ?: ['1404', '1403', '1402']) as $yr) {
+        foreach (($yearsRaw ?: ['1402', '1403', '1404']) as $yr) {
             $yrStr = (string) $yr;
             $years[] = [
                 'value' => $yrStr,
@@ -273,9 +305,9 @@ final class Projects extends Composer
         }
 
         return [
-            'categories' => $mapTerms(ProjectPostType::TAX_CATEGORY),
-            'spaces' => $mapTerms(ProjectPostType::TAX_SPACE),
-            'cities' => $mapTerms(ProjectPostType::TAX_CITY),
+            'categories' => $mapTerms(ProjectPostType::TAX_CATEGORY, ['residential', 'commercial']),
+            'spaces' => $mapTerms(ProjectPostType::TAX_SPACE, ['kitchen', 'living', 'bath', 'office', 'hall', 'architecture', 'educational', 'sports']),
+            'cities' => $mapTerms(ProjectPostType::TAX_CITY, ['amol', 'tehran', 'mazandaran', 'firouzkuh']),
             'years' => $years,
         ];
     }

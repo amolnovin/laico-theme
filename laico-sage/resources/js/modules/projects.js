@@ -19,7 +19,12 @@
     year: document.querySelector("[data-prj-select='year']"),
     size: document.querySelector("[data-prj-select='size']")
   };
-  var state = { category: "all", space: "all", q: "", page: 1 };
+  var state = {
+    category: grid.getAttribute("data-init-category") || "all",
+    space: grid.getAttribute("data-init-space") || "all",
+    q: "",
+    page: 1
+  };
 
   var dict = {
     fa: { count: "{n} پروژه", prev: "قبلی", next: "بعدی", page: "صفحه" },
