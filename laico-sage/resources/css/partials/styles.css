@@ -93,11 +93,14 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
-  overflow-x: clip;
+  max-width: 100%;
+  overflow-x: hidden;
   font-family: var(--font);
   font-weight: 400;
   font-size: 16px;
@@ -537,7 +540,7 @@ html[dir="rtl"] .project-card { direction: rtl; }
 .project-card.wide-right { grid-column: 6 / 13; grid-row: 1; }
 .project-card.wide-left { grid-column: 1 / 9; grid-row: 2; }
 .project-card.narrow-right { grid-column: 9 / 13; grid-row: 2; }
-.tag {
+:not(body).tag {
   position: absolute;
   z-index: 2;
   top: 14px;
@@ -1105,13 +1108,13 @@ html[dir="rtl"] .project-card { direction: rtl; }
   border-color: var(--navy);
   color: #fff;
 }
-.archive {
+:not(body).archive {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   padding: 0 var(--pad) 80px;
 }
-.archive .project-card { min-height: 62vw; max-height: 520px; }
+:not(body).archive .project-card { min-height: 62vw; max-height: 520px; }
 .journal-list { display: grid; gap: 0; }
 .journal-item {
   display: grid;
@@ -1207,8 +1210,8 @@ html[dir="rtl"] .project-card { direction: rtl; }
   .footer-brand { grid-column: 1 / -1; grid-row: 1; }
   .footer-links { grid-row: 2; justify-self: start; }
   .footer-contact { grid-row: 2; }
-  .archive { grid-template-columns: 1fr; }
-  .archive .project-card { min-height: 70vw; }
+  :not(body).archive { grid-template-columns: 1fr; }
+  :not(body).archive .project-card { min-height: 70vw; }
 }
 
 @media (max-width: 720px) {
@@ -1721,7 +1724,7 @@ body { overscroll-behavior-y: none; }
 .about-team img,
 .contact-map img,
 .consult-photo { border-radius: var(--radius-lg); }
-.tag { border-radius: 8px; }
+:not(body).tag { border-radius: 8px; }
 .collection-card img,
 .project-card img { border-radius: inherit; }
 .systems {

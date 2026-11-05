@@ -3,7 +3,9 @@
  *
  * Powers:
  * - Single Media Library picker buttons (`.laico-pick-media` for Logo, Favicon, OG Image, Video, Poster)
+ * - About Page Media Cards (`.laico-pick-media-card` & `.laico-reset-media-card` with live preview + attachment ID)
  * - Multi-image Project Gallery picker (`#laico-pick-gallery`, `#laico-clear-gallery`, `.laico-remove-thumb`)
+ * - Live English fields toggle (`#laico_enable_english`) & About Page template detection
  */
 
 (function () {
@@ -48,7 +50,116 @@
       });
     });
 
-    // 2. Multi-Image Project Gallery Picker (`#laico-pick-gallery`)
+    // 2. About Page Rich Media Cards (`.laico-pick-media-card` & `.laico-reset-media-card`)
+    document.querySelectorAll('[data-media-card]').forEach(function (card) {
+      var idInput = card.querySelector('[data-media-id]');
+      var urlInput = card.querySelector('[data-media-url]');
+      var altInput = card.querySelector('[data-media-alt]');
+      var previewImg = card.querySelector('.laico-media-card-preview img');
+      var pickBtn = card.querySelector('.laico-pick-media-card');
+      var resetBtn = card.querySelector('.laico-reset-media-card');
+
+      if (urlInput && previewImg) {
+        urlInput.addEventListener('change', function () {
+          var val = urlInput.value.trim();
+          if (idInput) idInput.value = '';
+          previewImg.src = val || previewImg.getAttribute('data-default-src') || '';
+        });
+      }
+
+      if (pickBtn) {
+        pickBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (!window.wp || !window.wp.media) return;
+
+          var frame = window.wp.media({
+            title: 'انتخاب تصویر',
+            button: { text: 'استفاده از این تصویر' },
+            library: { type: 'image' },
+            multiple: false,
+          });
+
+          frame.on('select', function () {
+            var data = frame.state().get('selection').first().toJSON();
+            if (!data || !data.url) return;
+            if (idInput) idInput.value = data.id ? String(data.id) : '';
+            if (urlInput) urlInput.value = data.url;
+            if (altInput && !altInput.value.trim() && data.alt) {
+              altInput.value = data.alt;
+            }
+            if (previewImg) {
+              var previewSrc =
+                (data.sizes && data.sizes.medium_large && data.sizes.medium_large.url) ||
+                (data.sizes && data.sizes.large && data.sizes.large.url) ||
+                data.url;
+              previewImg.src = previewSrc;
+            }
+          });
+
+          frame.open();
+        });
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (idInput) idInput.value = '';
+          if (urlInput) urlInput.value = '';
+          if (previewImg) {
+            previewImg.src = previewImg.getAttribute('data-default-src') || '';
+          }
+        });
+      }
+    });
+
+    // 3. Live Toggle for English Settings Fields (`#laico_enable_english`)
+    var enToggle = document.getElementById('laico_enable_english');
+    if (enToggle) {
+      var syncEnFields = function () {
+        var on = !!enToggle.checked;
+        document.querySelectorAll('.laico-en-only-field').forEach(function (el) {
+          el.style.display = on ? '' : 'none';
+        });
+      };
+      enToggle.addEventListener('change', syncEnFields);
+      syncEnFields();
+    }
+
+    // 4. Automatically reveal `#laico_about_page_meta` when editing the About page or choosing its template
+    var aboutBox = document.getElementById('laico_about_page_meta');
+    if (aboutBox) {
+      var syncAboutBoxVisibility = function (tpl, slug) {
+        var isAbout =
+          aboutBox.classList.contains('is-about-page-active') ||
+          slug === 'about' ||
+          (tpl && String(tpl).indexOf('template-about') !== -1);
+        aboutBox.classList.toggle('is-about-page-hidden', !isAbout);
+      };
+
+      var classicTpl = document.getElementById('page_template');
+      if (classicTpl) {
+        classicTpl.addEventListener('change', function () {
+          syncAboutBoxVisibility(classicTpl.value, '');
+        });
+      }
+
+      if (window.wp && window.wp.data && window.wp.data.subscribe && window.wp.data.select) {
+        var lastStateKey = '';
+        window.wp.data.subscribe(function () {
+          var editor = window.wp.data.select('core/editor');
+          if (!editor || typeof editor.getEditedPostAttribute !== 'function') return;
+          var tpl = editor.getEditedPostAttribute('template') || '';
+          var slug = editor.getEditedPostAttribute('slug') || '';
+          var key = tpl + '|' + slug;
+          if (key !== lastStateKey) {
+            lastStateKey = key;
+            syncAboutBoxVisibility(tpl, slug);
+          }
+        });
+      }
+    }
+
+    // 5. Multi-Image Project Gallery Picker (`#laico-pick-gallery`)
     var galleryBtn = document.getElementById('laico-pick-gallery');
     var clearBtn = document.getElementById('laico-clear-gallery');
     var hiddenIds = document.getElementById('laico_gallery_ids');

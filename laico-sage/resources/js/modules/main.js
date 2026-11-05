@@ -203,7 +203,19 @@
     }
   };
 
+  if (window.laicoConfig && window.laicoConfig.i18n) {
+    if (window.laicoConfig.i18n.fa) {
+      Object.keys(window.laicoConfig.i18n.fa).forEach(function (k) { dict.fa[k] = window.laicoConfig.i18n.fa[k]; });
+    }
+    if (window.laicoConfig.i18n.en) {
+      Object.keys(window.laicoConfig.i18n.en).forEach(function (k) { dict.en[k] = window.laicoConfig.i18n.en[k]; });
+    }
+  }
+
+  var langSwitcherEnabled = !!(window.laicoConfig && window.laicoConfig.enableLangSwitcher);
+
   function lang() {
+    if (!langSwitcherEnabled) return "fa";
     return document.documentElement.lang === "en" ? "en" : "fa";
   }
 
@@ -579,7 +591,15 @@
 
   /* apply saved language after nodes exist */
   var saved = "fa";
-  try { saved = localStorage.getItem("laico-lang") || document.documentElement.lang || "fa"; } catch (e) {}
-  if (saved !== "fa" && saved !== "en") saved = "fa";
-  apply(saved);
+  if (langSwitcherEnabled) {
+    try { saved = localStorage.getItem("laico-lang") || document.documentElement.lang || "fa"; } catch (e) {}
+    if (saved !== "fa" && saved !== "en") saved = "fa";
+    apply(saved);
+  } else {
+    try { localStorage.removeItem("laico-lang"); } catch (e) {}
+    document.documentElement.lang = "fa";
+    document.documentElement.dir = "rtl";
+    document.querySelectorAll(".lang-fa").forEach(function (el) { el.hidden = false; });
+    document.querySelectorAll(".lang-en").forEach(function (el) { el.hidden = true; });
+  }
 })();

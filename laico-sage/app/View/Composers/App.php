@@ -132,8 +132,8 @@ final class App extends Composer
 
         if (is_post_type_archive(ProjectPostType::POST_TYPE) || is_page_template('template-projects.blade.php') || is_page('projects')) {
             return [
-                'fa' => 'پروژه‌های اجراشده — لایکو دیزاین',
-                'en' => 'Projects — Laico Design',
+                'fa' => 'همه پروژه‌ها، یک استاندارد ساخت — لایکو دیزاین',
+                'en' => 'All Projects — Laico Design',
             ];
         }
 

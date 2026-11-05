@@ -347,18 +347,21 @@ final class ThemeSettingsPage
             </div>
 
             <div class="laico-meta-field">
+              <label><strong>فعال‌سازی بخش زبان انگلیسی سایت (FA / EN)</strong></label>
+              <p style="margin-top:8px;">
+                <label>
+                  <input type="checkbox" id="laico_enable_english" name="laico_opt[enable_english]" value="1" <?php checked(! empty($opt['enable_english'])); ?>>
+                  نمایش بخش و سوییچر زبان انگلیسی (FA / EN) در سایت و فعال‌سازی فیلدهای ترجمهٔ انگلیسی
+                </label>
+              </p>
+            </div>
+
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label for="laico_default_lang"><strong>زبان پیش‌فرض وب‌سایت</strong></label>
               <select id="laico_default_lang" name="laico_opt[default_language]" class="widefat">
                 <option value="fa" <?php selected($opt['default_language'], 'fa'); ?>>فارسی — راست‌به‌چپ (FA / RTL)</option>
                 <option value="en" <?php selected($opt['default_language'], 'en'); ?>>انگلیسی — چپ‌به‌راست (EN / LTR)</option>
               </select>
-            </div>
-
-            <div class="laico-meta-field">
-              <label><strong>سوییچر تغییر زبان در هدر (FA / EN)</strong></label>
-              <p style="margin-top:8px;">
-                <label><input type="checkbox" name="laico_opt[enable_lang_switcher]" value="1" <?php checked(! empty($opt['enable_lang_switcher'])); ?>> نمایش دکمه تغییر آنی زبان فارسی / انگلیسی در هدر</label>
-              </p>
             </div>
           </div>
         </div>
@@ -388,7 +391,7 @@ final class ThemeSettingsPage
               <label><strong>آدرس شو روم و کارگاه (فارسی)</strong></label>
               <input type="text" name="laico_opt[address_fa]" value="<?php echo esc_attr((string) $opt['address_fa']); ?>" class="widefat">
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>آدرس شو روم و کارگاه (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[address_en]" value="<?php echo esc_attr((string) $opt['address_en']); ?>" class="widefat" dir="ltr">
             </div>
@@ -397,7 +400,7 @@ final class ThemeSettingsPage
               <label><strong>ساعات کاری (فارسی)</strong></label>
               <input type="text" name="laico_opt[hours_fa]" value="<?php echo esc_attr((string) $opt['hours_fa']); ?>" class="widefat">
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>ساعات کاری (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[hours_en]" value="<?php echo esc_attr((string) $opt['hours_en']); ?>" class="widefat" dir="ltr">
             </div>
@@ -441,7 +444,7 @@ final class ThemeSettingsPage
               <label><strong>معرفی کوتاه زیر لوگوی فوتر (فارسی)</strong></label>
               <input type="text" name="laico_opt[footer_tagline_fa]" value="<?php echo esc_attr((string) $opt['footer_tagline_fa']); ?>" class="widefat">
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>معرفی کوتاه زیر لوگوی فوتر (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[footer_tagline_en]" value="<?php echo esc_attr((string) $opt['footer_tagline_en']); ?>" class="widefat" dir="ltr">
             </div>
@@ -520,7 +523,7 @@ final class ThemeSettingsPage
               <label><strong>کیکر بالای تیتر (فارسی)</strong></label>
               <input type="text" name="laico_opt[home_kicker_fa]" value="<?php echo esc_attr((string) $opt['home_kicker_fa']); ?>" class="widefat">
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>کیکر بالای تیتر (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[home_kicker_en]" value="<?php echo esc_attr((string) $opt['home_kicker_en']); ?>" class="widefat" dir="ltr">
             </div>
@@ -528,7 +531,7 @@ final class ThemeSettingsPage
               <label><strong>عنوان H1 هیرو (فارسی)</strong></label>
               <input type="text" name="laico_opt[home_title_fa]" value="<?php echo esc_attr((string) $opt['home_title_fa']); ?>" class="widefat">
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>عنوان H1 هیرو (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[home_title_en]" value="<?php echo esc_attr((string) $opt['home_title_en']); ?>" class="widefat" dir="ltr">
             </div>
@@ -536,7 +539,7 @@ final class ThemeSettingsPage
               <label><strong>زیرعنوان هیرو (فارسی)</strong></label>
               <textarea name="laico_opt[home_lede_fa]" rows="2" class="widefat"><?php echo esc_textarea((string) $opt['home_lede_fa']); ?></textarea>
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>زیرعنوان هیرو (انگلیسی)</strong></label>
               <textarea name="laico_opt[home_lede_en]" rows="2" class="widefat" dir="ltr"><?php echo esc_textarea((string) $opt['home_lede_en']); ?></textarea>
             </div>
@@ -552,8 +555,10 @@ final class ThemeSettingsPage
                 <input type="text" name="laico_opt[stat_<?php echo $i; ?>_num]" value="<?php echo esc_attr((string) $opt["stat_{$i}_num"]); ?>" class="widefat" dir="ltr">
                 <label style="margin-top:6px;display:block;">برچسب فارسی:</label>
                 <input type="text" name="laico_opt[stat_<?php echo $i; ?>_fa]" value="<?php echo esc_attr((string) $opt["stat_{$i}_fa"]); ?>" class="widefat">
-                <label style="margin-top:6px;display:block;">برچسب انگلیسی:</label>
-                <input type="text" name="laico_opt[stat_<?php echo $i; ?>_en]" value="<?php echo esc_attr((string) $opt["stat_{$i}_en"]); ?>" class="widefat" dir="ltr">
+                <div class="laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
+                  <label style="margin-top:6px;display:block;">برچسب انگلیسی:</label>
+                  <input type="text" name="laico_opt[stat_<?php echo $i; ?>_en]" value="<?php echo esc_attr((string) $opt["stat_{$i}_en"]); ?>" class="widefat" dir="ltr">
+                </div>
               </div>
             <?php endfor; ?>
           </div>
@@ -655,7 +660,7 @@ final class ThemeSettingsPage
               <label><strong>توضیحات متای صفحه اصلی و پیش‌فرض (فارسی)</strong></label>
               <textarea name="laico_opt[seo_home_description_fa]" rows="3" class="widefat"><?php echo esc_textarea((string) $opt['seo_home_description_fa']); ?></textarea>
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>توضیحات متای پیش‌فرض (انگلیسی)</strong></label>
               <textarea name="laico_opt[seo_home_description_en]" rows="3" class="widefat" dir="ltr"><?php echo esc_textarea((string) $opt['seo_home_description_en']); ?></textarea>
             </div>
@@ -726,7 +731,7 @@ final class ThemeSettingsPage
               <label><strong>تیتر پیام موفقیت ثبت فرم (فارسی)</strong></label>
               <input type="text" name="laico_opt[form_success_title_fa]" value="<?php echo esc_attr((string) $opt['form_success_title_fa']); ?>" class="widefat">
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>تیتر پیام موفقیت ثبت فرم (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[form_success_title_en]" value="<?php echo esc_attr((string) $opt['form_success_title_en']); ?>" class="widefat" dir="ltr">
             </div>
@@ -735,7 +740,7 @@ final class ThemeSettingsPage
               <label><strong>متن پیام موفقیت ثبت فرم (فارسی)</strong></label>
               <input type="text" name="laico_opt[form_success_body_fa]" value="<?php echo esc_attr((string) $opt['form_success_body_fa']); ?>" class="widefat">
             </div>
-            <div class="laico-meta-field">
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>متن پیام موفقیت ثبت فرم (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[form_success_body_en]" value="<?php echo esc_attr((string) $opt['form_success_body_en']); ?>" class="widefat" dir="ltr">
             </div>
@@ -995,7 +1000,7 @@ final class ThemeSettingsPage
     private function tabBooleanKeys(string $tab): array
     {
         return match ($tab) {
-            'general' => ['enable_lang_switcher'],
+            'general' => ['enable_english', 'enable_lang_switcher'],
             'sections' => [
                 'sec_home_collections', 'sec_home_projects', 'sec_home_about',
                 'sec_home_craft', 'sec_home_journal', 'sec_home_cta',

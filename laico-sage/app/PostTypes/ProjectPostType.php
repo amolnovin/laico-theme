@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\PostTypes;
 
+use App\Services\ThemeOptions;
 use App\Support\Jalali;
 
 /**
@@ -177,6 +178,9 @@ final class ProjectPostType
 
     public function renderAddTermEnglishField(): void
     {
+        if (! ThemeOptions::isEnglishEnabled()) {
+            return;
+        }
         ?>
         <div class="form-field">
           <label for="laico_name_en">نام انگلیسی (English Label)</label>
@@ -188,6 +192,9 @@ final class ProjectPostType
 
     public function renderEditTermEnglishField(\WP_Term $term): void
     {
+        if (! ThemeOptions::isEnglishEnabled()) {
+            return;
+        }
         $val = (string) get_term_meta($term->term_id, '_laico_name_en', true);
         ?>
         <tr class="form-field">
@@ -230,14 +237,16 @@ final class ProjectPostType
             'high'
         );
 
-        add_meta_box(
-            'laico_project_bilingual',
-            'ترجمهٔ انگلیسی پروژه (اختیاری — دوزبانه)',
-            [$this, 'renderBilingualMetaBox'],
-            self::POST_TYPE,
-            'normal',
-            'default'
-        );
+        if (ThemeOptions::isEnglishEnabled()) {
+            add_meta_box(
+                'laico_project_bilingual',
+                'ترجمهٔ انگلیسی پروژه (اختیاری — دوزبانه)',
+                [$this, 'renderBilingualMetaBox'],
+                self::POST_TYPE,
+                'normal',
+                'default'
+            );
+        }
     }
 
     public function renderSpecsMetaBox(\WP_Post $post): void
@@ -255,43 +264,52 @@ final class ProjectPostType
         $area = (string) get_post_meta($post->ID, '_laico_area', true);
         $featuredHome = (bool) get_post_meta($post->ID, '_laico_featured_home', true);
         $mosaicSlot = (int) get_post_meta($post->ID, '_laico_mosaic_slot', true);
+        $enEnabled = ThemeOptions::isEnglishEnabled();
         ?>
         <div class="laico-meta-grid laico-meta-grid--2col" dir="rtl">
           <div class="laico-meta-field">
             <label for="laico_client_fa"><strong>نام کارفرما (فارسی)</strong></label>
             <input type="text" id="laico_client_fa" name="laico_client_fa" value="<?php echo esc_attr($clientFa); ?>" class="widefat" placeholder="مثلاً: خانوادهٔ کریمی">
           </div>
+          <?php if ($enEnabled) : ?>
           <div class="laico-meta-field">
             <label for="laico_client_en"><strong>نام کارفرما (انگلیسی — اختیاری)</strong></label>
             <input type="text" id="laico_client_en" name="laico_client_en" value="<?php echo esc_attr($clientEn); ?>" class="widefat" dir="ltr" placeholder="e.g. Karimi family">
           </div>
+          <?php endif; ?>
 
           <div class="laico-meta-field">
             <label for="laico_year"><strong>سال انجام پروژه (شمسی)</strong></label>
             <input type="text" id="laico_year" name="laico_year" value="<?php echo esc_attr($year); ?>" class="widefat" dir="ltr" placeholder="1404">
           </div>
+          <?php if ($enEnabled) : ?>
           <div class="laico-meta-field">
             <label for="laico_year_en"><strong>سال میلادی (اختیاری — در صورت خالی بودن خودکار محاسبه می‌شود)</strong></label>
             <input type="text" id="laico_year_en" name="laico_year_en" value="<?php echo esc_attr($yearEn); ?>" class="widefat" dir="ltr" placeholder="2025">
           </div>
+          <?php endif; ?>
 
           <div class="laico-meta-field">
             <label for="laico_duration_fa"><strong>مدت زمان پروژه (فارسی)</strong></label>
             <input type="text" id="laico_duration_fa" name="laico_duration_fa" value="<?php echo esc_attr($durationFa); ?>" class="widefat" placeholder="مثلاً: ۸ ماه">
           </div>
+          <?php if ($enEnabled) : ?>
           <div class="laico-meta-field">
             <label for="laico_duration_en"><strong>مدت زمان پروژه (انگلیسی — اختیاری)</strong></label>
             <input type="text" id="laico_duration_en" name="laico_duration_en" value="<?php echo esc_attr($durationEn); ?>" class="widefat" dir="ltr" placeholder="e.g. 8 months">
           </div>
+          <?php endif; ?>
 
           <div class="laico-meta-field">
             <label for="laico_location_fa"><strong>مکان پروژه (فارسی)</strong></label>
             <input type="text" id="laico_location_fa" name="laico_location_fa" value="<?php echo esc_attr($locationFa); ?>" class="widefat" placeholder="مثلاً: تهران، سعادت‌آباد">
           </div>
+          <?php if ($enEnabled) : ?>
           <div class="laico-meta-field">
             <label for="laico_location_en"><strong>مکان پروژه (انگلیسی — اختیاری)</strong></label>
             <input type="text" id="laico_location_en" name="laico_location_en" value="<?php echo esc_attr($locationEn); ?>" class="widefat" dir="ltr" placeholder="e.g. Saadat Abad, Tehran">
           </div>
+          <?php endif; ?>
 
           <div class="laico-meta-field">
             <label for="laico_area"><strong>متراژ پروژه (به متر مربع — فقط عدد)</strong></label>
@@ -409,27 +427,36 @@ final class ProjectPostType
             return;
         }
 
-        $textFields = [
+        $faTextFields = [
             'laico_client_fa' => '_laico_client_fa',
-            'laico_client_en' => '_laico_client_en',
             'laico_duration_fa' => '_laico_duration_fa',
-            'laico_duration_en' => '_laico_duration_en',
             'laico_location_fa' => '_laico_location_fa',
+        ];
+        foreach ($faTextFields as $formKey => $metaKey) {
+            $val = isset($_POST[$formKey]) ? sanitize_text_field(wp_unslash((string) $_POST[$formKey])) : '';
+            update_post_meta($postId, $metaKey, $val);
+        }
+
+        $enTextFields = [
+            'laico_client_en' => '_laico_client_en',
+            'laico_duration_en' => '_laico_duration_en',
             'laico_location_en' => '_laico_location_en',
             'laico_title_en' => '_laico_title_en',
         ];
-
-        foreach ($textFields as $formKey => $metaKey) {
-            $val = isset($_POST[$formKey]) ? sanitize_text_field(wp_unslash((string) $_POST[$formKey])) : '';
-            update_post_meta($postId, $metaKey, $val);
+        foreach ($enTextFields as $formKey => $metaKey) {
+            if (array_key_exists($formKey, $_POST)) {
+                update_post_meta($postId, $metaKey, sanitize_text_field(wp_unslash((string) $_POST[$formKey])));
+            }
         }
 
         $yearRaw = isset($_POST['laico_year']) ? Jalali::toEnglishDigits(sanitize_text_field(wp_unslash((string) $_POST['laico_year']))) : '';
         $yearClean = preg_replace('/\D+/', '', $yearRaw) ?: '';
         update_post_meta($postId, '_laico_year', $yearClean);
 
-        $yearEnRaw = isset($_POST['laico_year_en']) ? Jalali::toEnglishDigits(sanitize_text_field(wp_unslash((string) $_POST['laico_year_en']))) : '';
-        update_post_meta($postId, '_laico_year_en', preg_replace('/\D+/', '', $yearEnRaw) ?: '');
+        if (array_key_exists('laico_year_en', $_POST)) {
+            $yearEnRaw = Jalali::toEnglishDigits(sanitize_text_field(wp_unslash((string) $_POST['laico_year_en'])));
+            update_post_meta($postId, '_laico_year_en', preg_replace('/\D+/', '', $yearEnRaw) ?: '');
+        }
 
         $area = isset($_POST['laico_area']) ? max(0, (int) Jalali::toEnglishDigits((string) wp_unslash($_POST['laico_area']))) : 0;
         update_post_meta($postId, '_laico_area', $area > 0 ? (string) $area : '');
@@ -456,10 +483,12 @@ final class ProjectPostType
         update_post_meta($postId, '_laico_video_url', $videoUrl);
         update_post_meta($postId, '_laico_video_poster', $videoPoster);
 
-        $ledeEn = isset($_POST['laico_lede_en']) ? sanitize_textarea_field(wp_unslash((string) $_POST['laico_lede_en'])) : '';
-        $contentEn = isset($_POST['laico_content_en']) ? wp_kses_post((string) wp_unslash($_POST['laico_content_en'])) : '';
-        update_post_meta($postId, '_laico_lede_en', $ledeEn);
-        update_post_meta($postId, '_laico_content_en', $contentEn);
+        if (array_key_exists('laico_lede_en', $_POST)) {
+            update_post_meta($postId, '_laico_lede_en', sanitize_textarea_field(wp_unslash((string) $_POST['laico_lede_en'])));
+        }
+        if (array_key_exists('laico_content_en', $_POST)) {
+            update_post_meta($postId, '_laico_content_en', wp_kses_post((string) wp_unslash($_POST['laico_content_en'])));
+        }
     }
 
     /**

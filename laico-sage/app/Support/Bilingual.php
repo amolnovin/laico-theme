@@ -13,12 +13,11 @@ final class Bilingual
     public static function pair(string $fa, string $en = '', bool $allowInlineHtml = false): string
     {
         $enText = trim($en) !== '' ? $en : $fa;
-        $defaultLang = (string) \App\Services\ThemeOptions::get('default_lang', 'fa');
-        $bilingualEnabled = (bool) \App\Services\ThemeOptions::get('enable_bilingual', true);
+        $bilingualEnabled = \App\Services\ThemeOptions::isEnglishEnabled();
+        $defaultLang = $bilingualEnabled ? (string) \App\Services\ThemeOptions::get('default_lang', 'fa') : 'fa';
 
         if (! $bilingualEnabled) {
-            $only = $defaultLang === 'en' ? $enText : $fa;
-            return $allowInlineHtml ? wp_kses_post($only) : esc_html($only);
+            return $allowInlineHtml ? wp_kses_post($fa) : esc_html($fa);
         }
 
         $safeFa = $allowInlineHtml ? wp_kses_post($fa) : esc_html($fa);

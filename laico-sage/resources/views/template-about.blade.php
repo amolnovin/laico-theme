@@ -6,7 +6,11 @@
 @section('content')
   @php
     $pageId = (int) get_queried_object_id();
+    if ($pageId <= 0) {
+      $pageId = \App\Support\Hero::findSectionPageId('about');
+    }
     $hero = \App\Support\Hero::resolve('about', $pageId);
+    $about = \App\PostTypes\PageAndPostMeta::resolveAboutPageData($pageId);
     $rawContent = $pageId > 0 ? trim((string) get_post_field('post_content', $pageId)) : '';
   @endphp
 
@@ -14,10 +18,11 @@
   @include('partials.hero-page', ['hero' => $hero])
 
   <section class="about-story" id="about-story">
-    <p class="about-lead">
-      <span class="lang-fa">معماری برای ما، گفتگو میان نور، ماده و زندگی است. ما در<br class="about-br"><strong>لایکودیزاین</strong> معتقدیم هر کنج از یک فضا، پتانسیل تبدیل شدن به<br class="about-br">اثری ماندگار را دارد. از نخستین خطوط روی کاغذ تا آخرین جزئیات<br class="about-br">اجرا، تلاش می‌کنیم مرزهای میان زیبایی‌شناسی مینیمال و<br class="about-br">کارآمدی مدرن را کمرنگ کنیم.</span>
-      <span class="lang-en" hidden>For us, architecture is a conversation between light, material and life. At <strong>Laico Design</strong> we believe every corner of a space can become a lasting work. From the first lines on paper to the last detail of the build, we soften the line between minimal beauty and modern usefulness.</span>
-    </p>
+    @if (!empty($about['show_lead']))
+      <p class="about-lead">
+        {!! laico_bi($about['lead_fa'], $about['lead_en'], true) !!}
+      </p>
+    @endif
 
     <ul class="about-values">
       <li>
@@ -58,27 +63,49 @@
     </ul>
   </section>
 
-  <section class="about-collage" aria-label="نمونه اجرا">
-    <div class="about-collage-stage">
-      <img class="c-sink" src="{{ esc_url(laico_asset('images/about-k-sink.jpg')) }}" alt="سینک و کابینت سرمه‌ای" width="476" height="336" loading="lazy">
-      <img class="c-run" src="{{ esc_url(laico_asset('images/about-k-run.jpg')) }}" alt="کابینت سرمه‌ای با صفحه سنگ" width="748" height="394" loading="lazy">
-      <img class="c-base" src="{{ esc_url(laico_asset('images/about-k-base.jpg')) }}" alt="جزئیات کشوها و دستگیره‌ها" width="654" height="548" loading="lazy">
-      <img class="c-glass" src="{{ esc_url(laico_asset('images/about-k-glass.jpg')) }}" alt="کابینت شیشه‌ای دیواری" width="510" height="514" loading="lazy">
-    </div>
-  </section>
+  @if (!empty($about['show_collage']))
+    <section class="about-collage" aria-label="نمونه اجرا">
+      <div class="about-collage-stage">
+        @foreach ($about['collage'] as $item)
+          @if (!empty($item['show']))
+            <img class="{{ esc_attr($item['class']) }}"
+                 src="{{ esc_url($item['url']) }}"
+                 @if (!empty($item['srcset'])) srcset="{{ esc_attr($item['srcset']) }}" sizes="(max-width: 720px) 50vw, 45vw" @endif
+                 alt="{{ esc_attr($item['alt']) }}"
+                 width="{{ (int) $item['width'] }}"
+                 height="{{ (int) $item['height'] }}"
+                 loading="lazy"
+                 decoding="async">
+          @endif
+        @endforeach
+      </div>
+    </section>
+  @endif
 
-  <section class="about-team">
-    <div class="about-team-inner">
-      <h2>{!! laico_bi('گروه معماران و طراحان', 'Architects and designers') !!}</h2>
-      @if ($rawContent !== '')
-        <div class="prose" style="padding:0;margin-bottom:32px;">{!! apply_filters('the_content', $rawContent) !!}</div>
-      @else
-        <div style="margin-bottom:32px;border-radius:8px;overflow:hidden;">
-          <img src="{{ esc_url(laico_asset('images/about-team.jpg')) }}" alt="استودیوی معماری و طراحی لایکو" style="width:100%;max-height:520px;object-fit:cover;display:block;" loading="lazy">
-        </div>
-      @endif
-    </div>
-  </section>
+  @if (!empty($about['show_team']))
+    <section class="about-team">
+      <div class="about-team-inner">
+        <h2>{!! laico_bi($about['team_title_fa'], $about['team_title_en']) !!}</h2>
+
+        @if (!empty($about['show_team_image']) && !empty($about['team_image']['url']))
+          <div class="about-team-media" style="margin-bottom:32px;border-radius:var(--radius-lg, 20px);overflow:hidden;">
+            <img src="{{ esc_url($about['team_image']['url']) }}"
+                 @if (!empty($about['team_image']['srcset'])) srcset="{{ esc_attr($about['team_image']['srcset']) }}" sizes="(max-width: 1180px) 100vw, 1120px" @endif
+                 alt="{{ esc_attr($about['team_image']['alt']) }}"
+                 width="{{ (int) $about['team_image']['width'] }}"
+                 height="{{ (int) $about['team_image']['height'] }}"
+                 style="width:100%;max-height:560px;object-fit:cover;display:block;"
+                 loading="lazy"
+                 decoding="async">
+          </div>
+        @endif
+
+        @if ($rawContent !== '')
+          <div class="prose" style="padding:0;margin-bottom:32px;">{!! apply_filters('the_content', $rawContent) !!}</div>
+        @endif
+      </div>
+    </section>
+  @endif
 
   @include('partials.about-consult', ['sourcePage' => 'درباره ما', 'panelAtEnd' => false])
 @endsection

@@ -27,7 +27,7 @@
     </div>
 
     <div class="header-tools">
-      @if(!empty($themeOpt['enable_lang_switcher']))
+      @if(\App\Services\ThemeOptions::isEnglishEnabled())
         <div class="lang" role="group" aria-label="Language">
           <button type="button" data-lang="fa" class="{{ ($themeOpt['default_language'] ?? 'fa') === 'fa' ? 'is-active' : '' }}">FA</button>
           <span aria-hidden="true">/</span>
