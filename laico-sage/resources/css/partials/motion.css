@@ -1,0 +1,188 @@
+/* LAICO DESIGN — motion system (v1.3.0)
+   Principles
+   - Purposeful: motion explains hierarchy (what comes first, what belongs together).
+   - Subtle: 24–32px travel, 0.8–1.2s, ease-out-expo; stagger 80ms; each element animates once.
+   - Cheap: only transform / opacity / clip-path / translate / scale (no layout properties).
+   - Safe: everything is gated by html.mo-on (set only when the user has NOT asked for reduced motion);
+           content is visible without JavaScript; hidden states are applied by motion.js itself.
+   Loaded after css/styles.css. Behaviour lives in js/motion.js. */
+
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes moUp    { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes moFade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes moDown  { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+@keyframes moZoom  { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes moKen   { from { transform: scale(1.16); } to { transform: scale(1.02); } }
+@keyframes moRule  { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes moWord  { from { transform: translateY(112%); } to { transform: translateY(0); } }
+@keyframes moCurtainOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes moCurtainIn  { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- page transition curtain (brand colour) ---------- */
+.mo-on::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: #0b1d33;
+  pointer-events: none;
+  opacity: 0;
+  animation: moCurtainOut 0.7s 0.04s var(--ease) both;
+}
+.mo-on.mo-leave::after { animation: moCurtainIn 0.28s var(--ease) both; }
+
+/* ---------- scroll progress ---------- */
+.mo-progress {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 70;
+  background: #fff;
+  mix-blend-mode: difference;        /* visible on navy and on white */
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+html[dir="rtl"] .mo-progress { transform-origin: 100% 50%; }
+
+/* ---------- header: entrance + hide on scroll down / show on scroll up ---------- */
+.mo-on .site-header {
+  transition: transform 0.55s var(--ease-out), background 0.35s var(--ease), box-shadow 0.35s var(--ease);
+  animation: moDown 0.9s 0.25s var(--ease-out) backwards;
+}
+.mo-on .site-header.is-tucked { transform: translateY(-104%); }
+
+/* ---------- hero entrance (pure CSS: works even if motion.js fails) ---------- */
+.mo-on .hero-media img,
+.mo-on .page-hero > img { animation: moKen 2.8s var(--ease-out) backwards; }
+.mo-on .hero-shade,
+.mo-on .page-hero .shade { animation: moFade 1.4s ease backwards; }
+.mo-on .hero-kicker,
+.mo-on .page-hero-copy .eyebrow { animation: moUp 0.9s 0.35s var(--ease-out) backwards; }
+.mo-on .hero h1,
+.mo-on .page-hero h1 { animation: moFade 0.8s 0.45s ease backwards; }
+.mo-on .hero-rule { transform-origin: 100% 50%; animation: moRule 1.1s 0.9s var(--ease-out) backwards; }
+html[dir="ltr"].mo-on .hero-rule { transform-origin: 0 50%; }
+.mo-on .hero .lede,
+.mo-on .page-hero .lede { animation: moUp 0.9s 1s var(--ease-out) backwards; }
+.mo-on .hero .contact-card { animation: moUp 1s 1.15s var(--ease-out) backwards; }
+.mo-on .scroll-hint { animation: moFade 1s 1.6s ease backwards; }
+
+/* word-by-word title (words only: Persian letters must stay joined) */
+.mo-w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-block: 0.18em;
+  margin-block: -0.18em;
+}
+.mo-w > span {
+  display: inline-block;
+  animation: moWord 1.05s calc(0.5s + var(--w, 0) * 75ms) var(--ease-out) backwards;
+}
+
+/* project / article head */
+.mo-on .pd-top .crumbs { animation: moUp 0.8s 0.2s var(--ease-out) backwards; }
+.mo-on .pd-top .pd-kicker { animation: moUp 0.8s 0.3s var(--ease-out) backwards; }
+.mo-on .pd-top h1 { animation: moFade 0.8s 0.4s ease backwards; }
+.mo-on .pd-top .pd-lede,
+.mo-on .pd-top .ar-meta { animation: moUp 0.9s 0.8s var(--ease-out) backwards; }
+
+.mo-on .pd-top .pd-cover { animation: moUp 1.2s 0.9s var(--ease-out) backwards; }
+.mo-on .pd-top .pd-card { animation: moUp 1.2s 1.05s var(--ease-out) backwards; }
+.mo-on .ar-cover { animation: none; }
+
+/* ---------- scroll reveal ---------- */
+.mo-on .mo-r {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s ease calc(var(--mo-i, 0) * 80ms),
+    transform 1.1s var(--ease-out) calc(var(--mo-i, 0) * 80ms);
+}
+.mo-on .mo-r.mo-in { opacity: 1; transform: none; }
+
+/* media: wipe-up reveal + inner image settles from a slight zoom */
+.mo-on .mo-m {
+  opacity: 0;
+  clip-path: inset(16% 0 0 0 round var(--mo-r, 20px));
+  transition:
+    clip-path 1.2s var(--ease-out) calc(var(--mo-i, 0) * 90ms),
+    opacity 0.7s ease calc(var(--mo-i, 0) * 90ms);
+}
+.mo-on .mo-m.mo-in { opacity: 1; clip-path: inset(0 0 0 0 round var(--mo-r, 20px)); }
+.mo-on .mo-m:not(img) img { transition: transform 1.7s var(--ease-out) calc(var(--mo-i, 0) * 90ms); }
+.mo-on .mo-m:not(.mo-in):not(img) img { transform: scale(1.2); }
+
+/* ---------- parallax ---------- */
+.mo-on .mo-par { overflow: hidden; }
+.mo-on .mo-par img,
+.mo-on .page-hero > img {
+  scale: 1.16;
+  translate: 0 var(--py, 0px);
+  will-change: translate;
+}
+.mo-on .hero-media { bottom: -16%; will-change: translate; }
+.mo-on .hero-copy { will-change: translate, opacity; }
+
+/* ---------- marquee ---------- */
+.marquee {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+/* ---------- micro-interactions ---------- */
+.btn-pill,
+.btn-solid,
+.btn-pill-dark,
+.btn-line,
+.svc-submit,
+.about-submit { will-change: transform; }
+.btn-pill:hover,
+.btn-solid:hover,
+.btn-pill-dark:hover,
+.btn-line:hover,
+.svc-submit:hover,
+.about-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(11, 29, 51, 0.18); }
+.btn-pill:active,
+.btn-solid:active,
+.btn-pill-dark:active,
+.btn-line:active,
+.svc-submit:active,
+.about-submit:active { transform: scale(0.97); box-shadow: none; }
+
+.jr-more,
+.footer-links a { transition: text-underline-offset 0.35s var(--ease), padding 0.35s var(--ease), opacity 0.2s; }
+.jr-card:hover .jr-more { text-underline-offset: 10px; }
+.footer-links a:hover { padding-inline-start: 6px; }
+.jr-title { transition: opacity 0.3s; }
+.jr-card:hover .jr-title { opacity: 0.72; }
+.stat strong,
+.pager button { font-variant-numeric: tabular-nums; }
+
+/* tabs / pills / cards: smooth state change when filtering */
+.prj-card.is-shuffle { animation: moZoom 0.6s var(--ease-out) backwards; animation-delay: calc(var(--s, 0) * 55ms); }
+
+/* form feedback, lightbox, mobile menu */
+.form-success:not([hidden]),
+.svc-done:not([hidden]),
+.about-done:not([hidden]) { animation: moUp 0.7s var(--ease-out) backwards; }
+.lb { animation: moFade 0.3s ease backwards; }
+.lb img { animation: moZoom 0.5s var(--ease-out) backwards; }
+.mo-on .site-header.is-open .nav-panel > * { animation: moUp 0.6s calc(0.08s + var(--n, 0) * 55ms) var(--ease-out) backwards; }
+
+@media (max-width: 720px) {
+  .mo-on .mo-r { transform: translateY(18px); }
+  .mo-on .mo-m { clip-path: inset(10% 0 0 0 round var(--mo-r, 16px)); }
+  .mo-on .hero-media { bottom: -10%; }
+}
+
+@media print {
+  .mo-on::after, .mo-progress { display: none !important; }
+  .mo-on .mo-r, .mo-on .mo-m { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+}

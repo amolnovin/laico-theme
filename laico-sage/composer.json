@@ -1,0 +1,56 @@
+{
+  "name": "amolnovin/laico-sage",
+  "type": "wordpress-theme",
+  "license": "MIT",
+  "description": "Laico Design luxury interior architecture WordPress theme built with Roots Sage (Acorn + Blade + Vite).",
+  "homepage": "https://github.com/amolnovin/laico-theme",
+  "authors": [
+    {
+      "name": "Amol Novin / Laico Design",
+      "homepage": "https://github.com/amolnovin"
+    }
+  ],
+  "keywords": [
+    "wordpress",
+    "sage",
+    "acorn",
+    "blade",
+    "rtl",
+    "interior-architecture",
+    "laico"
+  ],
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/helpers.php"
+    ]
+  },
+  "require": {
+    "php": ">=8.1",
+    "roots/acorn": "^4.3 || ^5.0 || ^6.0"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.20"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "extra": {
+    "acorn": {
+      "providers": [
+        "App\\Providers\\ThemeServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "scripts": {
+    "post-autoload-dump": [
+      "Roots\\Acorn\\ComposerScripts::postAutoloadDump"
+    ]
+  }
+}
