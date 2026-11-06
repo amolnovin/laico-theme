@@ -128,9 +128,9 @@
 
     $heroImgUrl = laico_asset($cfg['img']);
     if ($pageId > 0 && has_post_thumbnail($pageId)) {
-      $thumbUrl = get_the_post_thumbnail_url($pageId, 'laico-hero');
-      if ($thumbUrl) {
-        $heroImgUrl = $thumbUrl;
+      $origThumb = \App\Support\Hero::resolveOriginalAttachment((int) get_post_thumbnail_id($pageId));
+      if ($origThumb !== null && $origThumb['url'] !== '') {
+        $heroImgUrl = $origThumb['url'];
       }
     }
 

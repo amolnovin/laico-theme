@@ -184,21 +184,20 @@ final class Projects extends Composer
         $rawEn = trim((string) get_post_meta($id, '_laico_content_en', true));
         $contentEn = $rawEn !== '' ? wpautop($rawEn) : $contentFa;
 
-        // Resolve gallery attachments (or fallback direct URLs)
+        // Resolve gallery attachments (or fallback direct URLs) at full original dimensions
         $gallery = [];
         $idsCsv = (string) get_post_meta($id, '_laico_gallery_ids', true);
         $attIds = array_values(array_filter(array_map('intval', explode(',', $idsCsv))));
         foreach ($attIds as $attId) {
-            $src = wp_get_attachment_image_src($attId, 'large') ?: wp_get_attachment_image_src($attId, 'full');
-            $fullUrl = wp_get_attachment_image_url($attId, 'full');
-            if (is_array($src) && ! empty($src[0])) {
+            $orig = Hero::resolveOriginalAttachment($attId);
+            if ($orig !== null && $orig['url'] !== '') {
                 $gallery[] = [
-                    'url' => (string) $src[0],
-                    'full_url' => (string) ($fullUrl ?: $src[0]),
-                    'width' => (int) ($src[1] ?: 1200),
-                    'height' => (int) ($src[2] ?: 900),
-                    'srcset' => (string) (wp_get_attachment_image_srcset($attId, 'large') ?: ''),
-                    'alt_fa' => (string) (get_post_meta($attId, '_wp_attachment_image_alt', true) ?: $card['title_fa']),
+                    'url' => $orig['url'],
+                    'full_url' => $orig['url'],
+                    'width' => (int) ($orig['width'] ?: 1200),
+                    'height' => (int) ($orig['height'] ?: 900),
+                    'srcset' => '',
+                    'alt_fa' => $orig['alt'] !== '' ? $orig['alt'] : $card['title_fa'],
                     'alt_en' => $card['title_en'],
                 ];
             }
@@ -374,13 +373,13 @@ final class Projects extends Composer
     {
         $thumbId = (int) get_post_thumbnail_id($postId);
         if ($thumbId > 0) {
-            $img = wp_get_attachment_image_src($thumbId, 'large') ?: wp_get_attachment_image_src($thumbId, 'full');
-            if (is_array($img) && ! empty($img[0])) {
+            $orig = Hero::resolveOriginalAttachment($thumbId);
+            if ($orig !== null && $orig['url'] !== '') {
                 return [
-                    'url' => (string) $img[0],
-                    'srcset' => (string) (wp_get_attachment_image_srcset($thumbId, 'large') ?: ''),
-                    'width' => (int) ($img[1] ?: 1200),
-                    'height' => (int) ($img[2] ?: 900),
+                    'url' => $orig['url'],
+                    'srcset' => '',
+                    'width' => (int) ($orig['width'] ?: 1200),
+                    'height' => (int) ($orig['height'] ?: 900),
                 ];
             }
         }

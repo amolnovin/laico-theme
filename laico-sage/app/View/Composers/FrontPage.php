@@ -25,7 +25,6 @@ final class FrontPage extends Composer
         return [
             'hero' => Hero::resolve('home'),
             'featuredProjects' => self::queryFeaturedMosaic(),
-            'latestJournalPosts' => Journal::queryLatestForHome(3),
             'studioStats' => self::resolveStats(),
         ];
     }

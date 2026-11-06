@@ -186,6 +186,55 @@ final class Hero
     }
 
     /**
+     * Resolve an attachment ID to its untouched original full-resolution URL and dimensions
+     * (bypassing any WordPress `-scaled` copy or intermediate sub-sizes so rendered quality
+     * always matches original upload dimensions).
+     *
+     * @return array{url: string, width: int, height: int, alt: string}|null
+     */
+    public static function resolveOriginalAttachment(int $attachmentId): ?array
+    {
+        if ($attachmentId <= 0) {
+            return null;
+        }
+
+        $full = wp_get_attachment_image_src($attachmentId, 'full');
+        if (! is_array($full) || empty($full[0])) {
+            return null;
+        }
+
+        $url = (string) $full[0];
+        $width = (int) ($full[1] ?? 0);
+        $height = (int) ($full[2] ?? 0);
+
+        if (function_exists('wp_get_original_image_url')) {
+            $origUrl = (string) (wp_get_original_image_url($attachmentId) ?: '');
+            if ($origUrl !== '' && $origUrl !== $url) {
+                $url = $origUrl;
+                if (function_exists('wp_get_original_image_path')) {
+                    $origPath = wp_get_original_image_path($attachmentId);
+                    if (is_string($origPath) && is_file($origPath)) {
+                        $dims = @getimagesize($origPath);
+                        if (is_array($dims) && ! empty($dims[0]) && ! empty($dims[1])) {
+                            $width = (int) $dims[0];
+                            $height = (int) $dims[1];
+                        }
+                    }
+                }
+            }
+        }
+
+        $alt = trim((string) get_post_meta($attachmentId, '_wp_attachment_image_alt', true));
+
+        return [
+            'url' => $url,
+            'width' => $width,
+            'height' => $height,
+            'alt' => $alt,
+        ];
+    }
+
+    /**
      * Resolve full Hero payload (Featured Image URL, srcset, sizes, dimensions, alt, and bilingual texts).
      *
      * @return array<string, mixed>
@@ -207,16 +256,15 @@ final class Hero
         $alt = '';
         $fromFeaturedImage = false;
 
-        // 1. Primary source: Featured Image (تصویر شاخص برگه)
+        // 1. Primary source: Featured Image (تصویر شاخص برگه) at untouched original dimensions
         if ($pageId > 0 && has_post_thumbnail($pageId)) {
             $thumbId = (int) get_post_thumbnail_id($pageId);
-            $imgData = wp_get_attachment_image_src($thumbId, 'full');
-            if (is_array($imgData) && ! empty($imgData[0])) {
-                $imageUrl = (string) $imgData[0];
-                $width = ! empty($imgData[1]) ? (int) $imgData[1] : $width;
-                $height = ! empty($imgData[2]) ? (int) $imgData[2] : $height;
-                $srcset = (string) (wp_get_attachment_image_srcset($thumbId, 'full') ?: '');
-                $alt = (string) get_post_meta($thumbId, '_wp_attachment_image_alt', true);
+            $orig = self::resolveOriginalAttachment($thumbId);
+            if ($orig !== null && $orig['url'] !== '') {
+                $imageUrl = $orig['url'];
+                $width = $orig['width'] > 0 ? $orig['width'] : $width;
+                $height = $orig['height'] > 0 ? $orig['height'] : $height;
+                $alt = $orig['alt'];
                 $fromFeaturedImage = true;
             }
         } elseif ($context === 'home') {
@@ -266,6 +314,7 @@ final class Hero
         return [
             'page_id' => $pageId,
             'from_featured_image' => $fromFeaturedImage,
+            'url' => $imageUrl,
             'image_url' => $imageUrl,
             'srcset' => $srcset,
             'sizes' => $sizes,

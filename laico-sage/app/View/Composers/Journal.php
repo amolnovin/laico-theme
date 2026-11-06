@@ -123,12 +123,12 @@ final class Journal extends Composer
         $h = 800;
 
         if ($thumbId > 0) {
-            $src = wp_get_attachment_image_src($thumbId, 'large') ?: wp_get_attachment_image_src($thumbId, 'full');
-            if (is_array($src) && ! empty($src[0])) {
-                $imgUrl = (string) $src[0];
-                $w = (int) ($src[1] ?: 1200);
-                $h = (int) ($src[2] ?: 800);
-                $srcset = (string) (wp_get_attachment_image_srcset($thumbId, 'large') ?: '');
+            $orig = Hero::resolveOriginalAttachment($thumbId);
+            if ($orig !== null && $orig['url'] !== '') {
+                $imgUrl = $orig['url'];
+                $w = (int) ($orig['width'] ?: 1200);
+                $h = (int) ($orig['height'] ?: 800);
+                $srcset = '';
             }
         }
 

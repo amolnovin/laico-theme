@@ -22,7 +22,6 @@
    data-q="{{ esc_attr($searchTokens) }}"
    href="{{ esc_url($proj['url']) }}">
   <img src="{{ esc_url($proj['image']['url']) }}"
-       @if(!empty($proj['image']['srcset'])) srcset="{{ esc_attr($proj['image']['srcset']) }}" sizes="(max-width: 720px) 100vw, (max-width: 1080px) 50vw, 33vw" @endif
        alt="{{ esc_attr($proj['title_fa'] . ' — ' . $proj['space_fa']) }}"
        data-alt-fa="{{ esc_attr($proj['title_fa'] . ' — ' . $proj['space_fa']) }}"
        data-alt-en="{{ esc_attr($proj['title_en'] . ' — ' . $proj['space_en']) }}"

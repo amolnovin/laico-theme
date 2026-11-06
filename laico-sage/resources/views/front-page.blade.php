@@ -120,7 +120,6 @@
         @foreach ($mosaicItems as $idx => $item)
           <a class="project-card {{ $mosaicClasses[$idx % 4] }}" href="{{ esc_url($item['url']) }}">
             <img src="{{ esc_url($item['image']['url']) }}"
-                 @if(!empty($item['image']['srcset'])) srcset="{{ esc_attr($item['image']['srcset']) }}" sizes="(max-width: 900px) 100vw, 50vw" @endif
                  alt="{{ esc_attr($item['title_fa']) }}"
                  loading="lazy">
             <span class="shade"></span>
@@ -170,26 +169,6 @@
           <div><dt data-i18n="spec-hw">سخت‌افزار</dt><dd data-i18n="spec-hw-v">لولای آرام‌بند، ریل فول بلوم</dd></div>
           <div><dt data-i18n="spec-w">ضمانت</dt><dd data-i18n="spec-w-v">۱۰ سال ساخت، ۲ سال خدمات</dd></div>
         </dl>
-      </div>
-    </section>
-  @endif
-
-  {{-- Latest Journal Posts from WordPress `post` entries --}}
-  @if(!empty($themeOpt['sec_home_journal']) && !empty($latestJournalPosts))
-    <section class="jr" id="home-journal">
-      <div class="jr-wrap">
-        <div class="section-head" style="padding-inline:0;padding-top:0;">
-          <div class="copy">
-            <p class="eyebrow">{!! laico_bi('مجله لایکو', 'Laico Journal') !!}</p>
-            <h2>{!! laico_bi('آخرین یادداشت‌های ساخت', 'Latest notes on making') !!}</h2>
-          </div>
-          <a class="btn-line" href="{{ esc_url($navUrls['journal'] ?? home_url('/journal/')) }}">{!! laico_bi('همه یادداشت‌ها', 'All notes') !!}</a>
-        </div>
-        <div class="jr-grid">
-          @foreach ($latestJournalPosts as $postItem)
-            @include('partials.journal-card', ['item' => $postItem, 'featured' => false])
-          @endforeach
-        </div>
       </div>
     </section>
   @endif

@@ -10,7 +10,6 @@
     @if(!empty($project['image']['url']))
       <div class="pd-top-bg" aria-hidden="true">
         <img src="{{ esc_url($project['image']['url']) }}"
-             @if(!empty($project['image']['srcset'])) srcset="{{ esc_attr($project['image']['srcset']) }}" sizes="100vw" @endif
              alt=""
              width="{{ (int) $project['image']['width'] }}"
              height="{{ (int) $project['image']['height'] }}"
@@ -38,7 +37,6 @@
   <section class="pd-wrap pd-main">
     <figure class="pd-cover">
       <img src="{{ esc_url($project['image']['url']) }}"
-           @if(!empty($project['image']['srcset'])) srcset="{{ esc_attr($project['image']['srcset']) }}" sizes="(max-width: 960px) 100vw, 62vw" @endif
            alt="{{ esc_attr($project['title_fa'] . ' — تصویر اصلی') }}"
            data-alt-fa="{{ esc_attr($project['title_fa'] . ' — تصویر اصلی') }}"
            data-alt-en="{{ esc_attr($project['title_en'] . ' — main image') }}"
@@ -96,7 +94,6 @@
         @foreach ($project['gallery'] as $gIdx => $shot)
           <a class="pd-shot" href="{{ esc_url($shot['full_url']) }}" data-gallery-item aria-label="{{ esc_attr($project['title_fa']) }}">
             <img src="{{ esc_url($shot['url']) }}"
-                 @if(!empty($shot['srcset'])) srcset="{{ esc_attr($shot['srcset']) }}" sizes="(max-width: 720px) 100vw, 50vw" @endif
                  alt="{{ esc_attr($shot['alt_fa'] . ' — تصویر ' . \App\Support\Jalali::toPersianDigits($gIdx + 1)) }}"
                  data-alt-fa="{{ esc_attr($shot['alt_fa'] . ' — تصویر ' . \App\Support\Jalali::toPersianDigits($gIdx + 1)) }}"
                  data-alt-en="{{ esc_attr($shot['alt_en'] . ' — image ' . ($gIdx + 1)) }}"
