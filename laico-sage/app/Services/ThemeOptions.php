@@ -151,7 +151,7 @@ final class ThemeOptions
             // --- Tab 6: Patch Updater ---
             'patch_auto_backup' => true,
             'patch_require_signature' => false,
-            'patch_manifest_url' => '',
+            'patch_manifest_url' => 'https://github.com/amolnovin/laico-theme/raw/main/releases/manifest.json',
             'patch_public_key' => '',
             'patch_hmac_secret' => '',
         ];

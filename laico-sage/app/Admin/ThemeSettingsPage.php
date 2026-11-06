@@ -1077,7 +1077,7 @@ final class ThemeSettingsPage
           <div class="laico-meta-grid laico-meta-grid--2col" style="margin-top:14px;">
             <div class="laico-meta-field">
               <label><strong>آدرس مانیفست بروزرسانی از راه دور (HTTPS JSON URL — اختیاری)</strong></label>
-              <input type="url" name="laico_opt[patch_manifest_url]" value="<?php echo esc_attr((string) $opt['patch_manifest_url']); ?>" class="widefat" dir="ltr" placeholder="https://updates.example.com/laico-sage/manifest.json">
+              <input type="url" name="laico_opt[patch_manifest_url]" value="<?php echo esc_attr((string) $opt['patch_manifest_url']); ?>" class="widefat" dir="ltr" placeholder="https://github.com/amolnovin/laico-theme/raw/main/releases/manifest.json">
             </div>
             <div class="laico-meta-field">
               <label><strong>کلید عمومی امضای Ed25519 (Base64 یا Hex — اختیاری)</strong></label>
