@@ -9,6 +9,7 @@ export default defineConfig(({ command }) => ({
     emptyOutDir: true,
     manifest: 'manifest.json',
     assetsDir: 'assets',
+    assetsInlineLimit: 0,
     sourcemap: false,
     rollupOptions: {
       input: {

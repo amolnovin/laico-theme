@@ -45,6 +45,7 @@
           <textarea name="note" rows="4" placeholder="متن پیام را بنویسید.." data-i18n-placeholder="about-ph-note" required></textarea>
           <span class="field-error"></span>
         </label>
+        @include('partials.math-captcha')
         <button class="svc-submit" type="submit">{!! laico_bi('ثبت درخواست', 'Submit request') !!}</button>
       </form>
       <div class="svc-done" data-success hidden>

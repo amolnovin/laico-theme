@@ -432,6 +432,25 @@
       setError("phone", digits.length < 8 ? "err-phone" : "");
       setError("note", note.length < 4 ? "err-note" : "");
 
+      // WP Math Captcha extraction & validation (when rendered inside form)
+      var wpmcWrap = form.querySelector(".wpmc-wrap");
+      var wpmcAnswerEl = wpmcWrap ? wpmcWrap.querySelector('[name="wpmc_answer"]') : null;
+      var wpmcTokenEl = wpmcWrap ? wpmcWrap.querySelector('[name="wpmc_token"]') : null;
+      var wpmcHpEl = wpmcWrap ? wpmcWrap.querySelector('[name="wpmc_website"]') : null;
+      var wpmcAnswer = wpmcAnswerEl ? normalizeDigits(wpmcAnswerEl.value).trim() : "";
+
+      if (wpmcWrap) {
+        if (!wpmcAnswer || !/^-?\d+$/.test(wpmcAnswer)) {
+          setError(
+            "captcha",
+            language === "en" ? "Please enter the math security answer." : "لطفاً پاسخ عبارت امنیتی را به عدد وارد کنید.",
+            true
+          );
+        } else {
+          setError("captcha", "");
+        }
+      }
+
       if (!ok) {
         var bad = form.querySelector(".is-invalid input, .is-invalid textarea");
         if (bad) bad.focus();
@@ -450,6 +469,12 @@
         website_url: honeypot,
         _laico_nonce: cfg.nonce || ""
       };
+
+      if (wpmcWrap) {
+        payload.wpmc_answer = wpmcAnswer;
+        payload.wpmc_token = wpmcTokenEl ? wpmcTokenEl.value : "";
+        payload.wpmc_website = wpmcHpEl ? wpmcHpEl.value : "";
+      }
 
       function showSuccess(titleText, bodyText) {
         form.hidden = true;
@@ -503,7 +528,7 @@
             },
             body: JSON.stringify(payload)
           }).then(function (res) {
-            if (res.status === 404 || res.status === 405) {
+            if (res.status === 404 || res.status === 405 || res.status === 401 || res.status === 403) {
               return sendViaAjaxFallback();
             }
             return res.json();
@@ -524,7 +549,18 @@
               setError(fieldKey, data.errors[fieldKey], true);
             });
           }
-          showServerError((data && data.message) || (language === "en" ? "Submission failed. Please try again." : "خطا در ثبت درخواست. لطفاً دوباره تلاش کنید."));
+          if (wpmcWrap && data && (data.captcha_refresh || (data.errors && data.errors.captcha))) {
+            var refreshBtn = wpmcWrap.querySelector(".wpmc-refresh");
+            if (refreshBtn && data.captcha_refresh) {
+              refreshBtn.click();
+            }
+            if (wpmcAnswerEl) {
+              wpmcAnswerEl.focus();
+            }
+          }
+          if (!(data && data.errors && data.errors.captcha && Object.keys(data.errors).length === 1)) {
+            showServerError((data && data.message) || (language === "en" ? "Submission failed. Please try again." : "خطا در ثبت درخواست. لطفاً دوباره تلاش کنید."));
+          }
         })
         .catch(function () {
           form.classList.remove("is-submitting");
@@ -532,6 +568,84 @@
         });
     });
   });
+
+  /* Helper: check whether an internal path should skip prefetch / transition loader */
+  function isExcludedInternalUrl(urlObj) {
+    var path = urlObj.pathname || "";
+    var cfg = window.laicoConfig || {};
+    var prefixes = Array.isArray(cfg.excludePaths) ? cfg.excludePaths : ["/wp-admin", "/wp-login.php", "/wp-json"];
+    for (var i = 0; i < prefixes.length; i++) {
+      if (prefixes[i] && path.indexOf(prefixes[i]) === 0) return true;
+    }
+    if (/\.(pdf|zip|rar|7z|mp4|mp3|docx?|xlsx?|pptx?)($|\?)/i.test(path)) return true;
+    return false;
+  }
+
+  /* Centered Page-Transition Loading Indicator (`#laico-page-loader`) */
+  (function () {
+    var loader = document.getElementById("laico-page-loader");
+    var cfg = window.laicoConfig || {};
+    if (!loader || cfg.pageLoader === false) return;
+
+    var safetyTimer = 0;
+    function showLoader() {
+      loader.classList.add("is-visible");
+      loader.setAttribute("aria-hidden", "false");
+      clearTimeout(safetyTimer);
+      safetyTimer = setTimeout(hideLoader, 8000);
+    }
+    function hideLoader() {
+      clearTimeout(safetyTimer);
+      loader.classList.remove("is-visible");
+      loader.setAttribute("aria-hidden", "true");
+    }
+
+    hideLoader();
+    window.addEventListener("pageshow", hideLoader);
+    window.addEventListener("popstate", hideLoader);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") hideLoader();
+    });
+
+    document.addEventListener("click", function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+      if (!a) return;
+      if (
+        a.hasAttribute("download") ||
+        a.hasAttribute("data-no-loader") ||
+        a.hasAttribute("data-gallery-item") ||
+        (a.target && a.target !== "_self")
+      ) {
+        return;
+      }
+
+      var rawHref = a.getAttribute("href") || "";
+      if (!rawHref || rawHref.charAt(0) === "#" || /^(mailto:|tel:|javascript:|sms:|whatsapp:)/i.test(rawHref)) {
+        return;
+      }
+
+      var dest;
+      try {
+        dest = new URL(a.href, window.location.href);
+      } catch (err) {
+        return;
+      }
+
+      if (dest.origin !== window.location.origin) return;
+      if (isExcludedInternalUrl(dest)) return;
+
+      // Same-page hash navigation should scroll smoothly without showing full-page loader
+      if (dest.pathname === window.location.pathname && dest.search === window.location.search && dest.hash) {
+        return;
+      }
+      if (dest.href === window.location.href) {
+        return;
+      }
+
+      showLoader();
+    });
+  })();
 
   /* Speculative hover prefetching for internal navigation (when enabled in Optimization settings) */
   if (window.laicoConfig && window.laicoConfig.prefetch) {
@@ -541,7 +655,13 @@
       if (!a) return;
       var href = a.href;
       if (!href || prefetched[href] || href.indexOf(window.location.origin) !== 0) return;
-      if (href.indexOf("#") !== -1 || href.indexOf("/wp-admin") !== -1 || href.indexOf("/wp-login") !== -1) return;
+      if (href.indexOf("#") !== -1) return;
+      try {
+        var u = new URL(href, window.location.href);
+        if (isExcludedInternalUrl(u)) return;
+      } catch (err) {
+        return;
+      }
       var conn = navigator.connection;
       if (conn && (conn.saveData || /2g/.test(conn.effectiveType || ""))) return;
       prefetched[href] = true;

@@ -38,17 +38,17 @@
         <div class="contact-social" style="justify-content: center;">
           @if ($wa !== '')
             <a href="{{ esc_url($wa) }}" target="_blank" rel="noopener" aria-label="واتس‌اپ">
-              <i class="ri-whatsapp-line" style="font-size: 1.5rem;"></i>
+              @include('partials.social-icon', ['name' => 'whatsapp'])
             </a>
           @endif
           @if ($ig !== '')
             <a href="{{ esc_url($ig) }}" target="_blank" rel="noopener" aria-label="اینستاگرام">
-              <i class="ri-instagram-line" style="font-size: 1.5rem;"></i>
+              @include('partials.social-icon', ['name' => 'instagram'])
             </a>
           @endif
           @if ($tg !== '')
             <a href="{{ esc_url($tg) }}" target="_blank" rel="noopener" aria-label="تلگرام">
-              <i class="ri-telegram-line" style="font-size: 1.5rem;"></i>
+              @include('partials.social-icon', ['name' => 'telegram'])
             </a>
           @endif
         </div>

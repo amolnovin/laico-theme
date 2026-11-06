@@ -67,6 +67,8 @@
         <span class="field-error"></span>
       </div>
 
+      @include('partials.math-captcha')
+
       <button class="btn-solid" type="submit" data-i18n="f-send">ارسال درخواست</button>
     </form>
 

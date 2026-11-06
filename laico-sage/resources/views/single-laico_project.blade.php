@@ -7,6 +7,16 @@
   @endphp
 
   <section class="pd-top">
+    @if(!empty($project['image']['url']))
+      <div class="pd-top-bg" aria-hidden="true">
+        <img src="{{ esc_url($project['image']['url']) }}"
+             @if(!empty($project['image']['srcset'])) srcset="{{ esc_attr($project['image']['srcset']) }}" sizes="100vw" @endif
+             alt=""
+             width="{{ (int) $project['image']['width'] }}"
+             height="{{ (int) $project['image']['height'] }}"
+             decoding="async">
+      </div>
+    @endif
     <div class="pd-wrap">
       <nav class="crumbs" aria-label="breadcrumb">
         <a href="{{ esc_url($navUrls['projects'] ?? home_url('/projects/')) }}">{!! laico_bi('پروژه‌ها', 'Projects') !!}</a>

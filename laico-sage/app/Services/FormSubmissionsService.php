@@ -110,9 +110,35 @@ final class FormSubmissionsService
     public function processSubmission(array $input, string $nonce): array
     {
         $lang = isset($input['lang']) && $input['lang'] === 'en' ? 'en' : 'fa';
+        $ip = $this->clientIp();
+
+        // 0. Enforce Novin Security Suite / WP Math Captcha IP Blocklist
+        if (SecurityIntegrationService::isIpBlocked($ip)) {
+            SecurityIntegrationService::logSecurityEvent(
+                'ip_blocked',
+                'warning',
+                'تلاش ارسال فرم مشاوره از آدرس IP مسدودشده',
+                ['ip' => $ip]
+            );
+            return [
+                'status' => 403,
+                'body' => [
+                    'ok' => false,
+                    'message' => $lang === 'en'
+                        ? 'Access from your IP address is currently restricted.'
+                        : 'دسترسی از آدرس IP شما موقتاً محدود شده است. لطفاً چند دقیقه بعد تلاش کنید.',
+                ],
+            ];
+        }
 
         // 1. Verify WordPress form nonce (protects against CSRF)
         if ($nonce === '' || ! wp_verify_nonce($nonce, 'laico_public_form')) {
+            SecurityIntegrationService::logSecurityEvent(
+                'form_csrf_failed',
+                'notice',
+                'توکن امنیتی نامعتبر در ارسال فرم مشاوره',
+                ['ip' => $ip]
+            );
             return [
                 'status' => 403,
                 'body' => [
@@ -126,6 +152,13 @@ final class FormSubmissionsService
 
         // 2. Honeypot anti-bot trap (silent success to fool bots without storing spam)
         if (! empty($input['website_url'])) {
+            SecurityIntegrationService::logSecurityEvent(
+                'comment_spam',
+                'notice',
+                'تله ضدربات (Honeypot) در فرم مشاوره فعال شد',
+                ['ip' => $ip],
+                true
+            );
             return [
                 'status' => 200,
                 'body' => [
@@ -137,11 +170,17 @@ final class FormSubmissionsService
         }
 
         // 3. Per-IP Rate Limit
-        $ip = $this->clientIp();
         $maxPerWindow = max(1, (int) ThemeOptions::get('form_rate_limit_max', 5));
         $rateKey = 'laico_rl_' . substr(hash('sha256', $ip . '|' . NONCE_SALT), 0, 24);
         $attempts = (int) get_transient($rateKey);
         if ($attempts >= $maxPerWindow) {
+            SecurityIntegrationService::logSecurityEvent(
+                'comment_rate',
+                'warning',
+                'عبور از سقف نرخ ارسال فرم مشاوره',
+                ['ip' => $ip, 'attempts' => $attempts],
+                true
+            );
             return [
                 'status' => 429,
                 'body' => [
@@ -153,7 +192,23 @@ final class FormSubmissionsService
             ];
         }
 
-        // 4. Field extraction & validation
+        // 4. WP Math Captcha verification (fail-closed when plugin is active)
+        $captchaCheck = SecurityIntegrationService::verifyMathCaptcha($input, 'laico-consult-form');
+        if (! $captchaCheck['ok']) {
+            return [
+                'status' => 400,
+                'body' => [
+                    'ok' => false,
+                    'errors' => [
+                        'captcha' => $captchaCheck['message'],
+                    ],
+                    'captcha_refresh' => $captchaCheck['refresh'],
+                    'message' => $captchaCheck['message'],
+                ],
+            ];
+        }
+
+        // 5. Field extraction & validation
         $name = sanitize_text_field((string) ($input['name'] ?? ''));
         $rawPhone = sanitize_text_field((string) ($input['phone'] ?? ''));
         $type = sanitize_key((string) ($input['type'] ?? ''));
@@ -356,12 +411,14 @@ final class FormSubmissionsService
                 ],
             ]);
         }
+
+        // IPPanel Core SMS Notifications (Admin & Customer — Pattern or Manual)
+        (new IppanelSmsService())->dispatchFormNotifications($entry);
     }
 
     private function clientIp(): string
     {
-        $remote = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash((string) $_SERVER['REMOTE_ADDR'])) : '';
-        return filter_var($remote, FILTER_VALIDATE_IP) ? $remote : '0.0.0.0';
+        return SecurityIntegrationService::clientIp();
     }
 
     public static function unreadCount(): int

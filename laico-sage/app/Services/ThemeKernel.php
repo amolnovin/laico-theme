@@ -28,6 +28,8 @@ final class ThemeKernel
         }
         self::$booted = true;
 
+        (new SecurityIntegrationService())->register();
+        (new IppanelSmsService())->register();
         (new ProjectPostType())->register();
         (new PageAndPostMeta())->register();
         (new OptimizationService())->register();

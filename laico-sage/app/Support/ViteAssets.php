@@ -71,12 +71,20 @@ final class ViteAssets
 
     /**
      * Resolve public URL for an asset inside `resources/` (using hashed Vite output if available,
-     * falling back to `resources/{relativePath}`).
+     * falling back to `resources/{relativePath}`). Automatically upgrades legacy `.jpg`/`.jpeg`/`.png`
+     * theme image paths to `.webp` when present.
      */
     public static function assetUrl(string $relativePath): string
     {
         $clean = ltrim($relativePath, '/');
         $manifestKey = str_starts_with($clean, 'resources/') ? $clean : 'resources/' . $clean;
+
+        if (preg_match('/\.(?:jpe?g|png)$/i', $manifestKey) === 1) {
+            $webpKey = (string) preg_replace('/\.(?:jpe?g|png)$/i', '.webp', $manifestKey);
+            if (is_file(LAICO_THEME_DIR . '/' . $webpKey)) {
+                $manifestKey = $webpKey;
+            }
+        }
 
         $fromManifest = self::assetUri($manifestKey);
         if ($fromManifest !== null) {

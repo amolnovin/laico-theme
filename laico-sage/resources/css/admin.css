@@ -308,9 +308,63 @@
   background: #fbfcfe;
 }
 
-/* About Page Admin Meta Box & Media Cards */
-#laico_about_page_meta.is-about-page-hidden {
+/* About & Services Page Admin Meta Boxes & Media Cards */
+#laico_about_page_meta.is-about-page-hidden,
+#laico_services_page_meta.is-services-page-hidden {
   display: none;
+}
+
+.laico-svc-rows-wrap {
+  display: grid;
+  gap: 14px;
+}
+
+.laico-svc-admin-row {
+  background: #ffffff;
+  border: 1px solid #cfd9e6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 6px rgba(11, 29, 51, 0.04);
+}
+
+.laico-svc-admin-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #dce4ee;
+}
+
+.laico-svc-admin-row-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #0b1d33;
+}
+
+.laico-svc-row-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #0b1d33;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.laico-svc-admin-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .laico-about-admin-sec {

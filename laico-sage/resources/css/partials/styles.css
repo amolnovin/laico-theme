@@ -956,6 +956,10 @@ html[dir="rtl"] .project-card { direction: rtl; }
   line-height: 1.6;
 }
 .footer-legal p { margin: 0; }
+.footer-legal a { color: inherit; text-underline-offset: 3px; transition: color 0.2s var(--ease); }
+.footer-legal a:hover { color: var(--navy); text-decoration: underline; }
+.footer-legal strong,
+.footer-legal b { font-weight: 700; color: var(--navy); }
 .footer-legal-links { display: flex; gap: 16px; }
 .footer-legal-links a:hover { color: var(--navy); text-decoration: underline; text-underline-offset: 3px; }
 
@@ -1625,9 +1629,10 @@ html[dir="ltr"] .about-people li { direction: ltr; }
 .contact-social {
   direction: ltr;
   display: flex;
-  align-self: flex-end;
+  align-self: center;
+  justify-content: center;
   gap: 12px;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 .contact-social a {
   width: 44px;
@@ -1686,7 +1691,7 @@ html[dir="ltr"] .about-consult-grid.has-photo .about-consult-panel { direction: 
   }
   .contact-rule { display: none; }
   .contact-col { padding-inline: 4px; }
-  .contact-social { align-self: flex-start; }
+  .contact-social { align-self: center; justify-content: center; }
   .about-consult-grid.has-photo {
     grid-template-columns: 1fr;
     grid-template-areas: "photo" "panel" "form";

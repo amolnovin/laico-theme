@@ -13,7 +13,9 @@
 <a class="prj-card"
    data-prj-card
    data-category="{{ esc_attr($proj['category_slug']) }}"
+   data-categories="{{ esc_attr($proj['category_slugs'] ?? $proj['category_slug']) }}"
    data-space="{{ esc_attr($proj['space_slug']) }}"
+   data-spaces="{{ esc_attr($proj['space_slugs'] ?? $proj['space_slug']) }}"
    data-city="{{ esc_attr($proj['city_slug']) }}"
    data-year="{{ esc_attr($proj['year']) }}"
    data-size="{{ esc_attr($proj['size_bucket']) }}"

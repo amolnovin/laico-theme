@@ -50,65 +50,73 @@
       });
     });
 
-    // 2. About Page Rich Media Cards (`.laico-pick-media-card` & `.laico-reset-media-card`)
-    document.querySelectorAll('[data-media-card]').forEach(function (card) {
-      var idInput = card.querySelector('[data-media-id]');
-      var urlInput = card.querySelector('[data-media-url]');
-      var altInput = card.querySelector('[data-media-alt]');
-      var previewImg = card.querySelector('.laico-media-card-preview img');
-      var pickBtn = card.querySelector('.laico-pick-media-card');
-      var resetBtn = card.querySelector('.laico-reset-media-card');
-
-      if (urlInput && previewImg) {
-        urlInput.addEventListener('change', function () {
-          var val = urlInput.value.trim();
-          if (idInput) idInput.value = '';
-          previewImg.src = val || previewImg.getAttribute('data-default-src') || '';
-        });
-      }
-
+    // 2. Delegated Rich Media Cards (`.laico-pick-media-card` & `.laico-reset-media-card` — supports dynamic repeater rows)
+    document.addEventListener('click', function (e) {
+      var pickBtn = e.target.closest('.laico-pick-media-card');
       if (pickBtn) {
-        pickBtn.addEventListener('click', function (e) {
-          e.preventDefault();
-          if (!window.wp || !window.wp.media) return;
+        var card = pickBtn.closest('[data-media-card]');
+        if (!card || !window.wp || !window.wp.media) return;
+        e.preventDefault();
 
-          var frame = window.wp.media({
-            title: 'انتخاب تصویر',
-            button: { text: 'استفاده از این تصویر' },
-            library: { type: 'image' },
-            multiple: false,
-          });
+        var idInput = card.querySelector('[data-media-id]');
+        var urlInput = card.querySelector('[data-media-url]');
+        var altInput = card.querySelector('[data-media-alt]');
+        var previewImg = card.querySelector('.laico-media-card-preview img');
 
-          frame.on('select', function () {
-            var data = frame.state().get('selection').first().toJSON();
-            if (!data || !data.url) return;
-            if (idInput) idInput.value = data.id ? String(data.id) : '';
-            if (urlInput) urlInput.value = data.url;
-            if (altInput && !altInput.value.trim() && data.alt) {
-              altInput.value = data.alt;
-            }
-            if (previewImg) {
-              var previewSrc =
-                (data.sizes && data.sizes.medium_large && data.sizes.medium_large.url) ||
-                (data.sizes && data.sizes.large && data.sizes.large.url) ||
-                data.url;
-              previewImg.src = previewSrc;
-            }
-          });
-
-          frame.open();
+        var frame = window.wp.media({
+          title: 'انتخاب تصویر',
+          button: { text: 'استفاده از این تصویر' },
+          library: { type: 'image' },
+          multiple: false,
         });
-      }
 
-      if (resetBtn) {
-        resetBtn.addEventListener('click', function (e) {
-          e.preventDefault();
-          if (idInput) idInput.value = '';
-          if (urlInput) urlInput.value = '';
+        frame.on('select', function () {
+          var data = frame.state().get('selection').first().toJSON();
+          if (!data || !data.url) return;
+          if (idInput) idInput.value = data.id ? String(data.id) : '';
+          if (urlInput) urlInput.value = data.url;
+          if (altInput && !altInput.value.trim() && data.alt) {
+            altInput.value = data.alt;
+          }
           if (previewImg) {
-            previewImg.src = previewImg.getAttribute('data-default-src') || '';
+            var previewSrc =
+              (data.sizes && data.sizes.medium_large && data.sizes.medium_large.url) ||
+              (data.sizes && data.sizes.large && data.sizes.large.url) ||
+              data.url;
+            previewImg.src = previewSrc;
           }
         });
+
+        frame.open();
+        return;
+      }
+
+      var resetBtn = e.target.closest('.laico-reset-media-card');
+      if (resetBtn) {
+        var resetCard = resetBtn.closest('[data-media-card]');
+        if (!resetCard) return;
+        e.preventDefault();
+        var rId = resetCard.querySelector('[data-media-id]');
+        var rUrl = resetCard.querySelector('[data-media-url]');
+        var rImg = resetCard.querySelector('.laico-media-card-preview img');
+        if (rId) rId.value = '';
+        if (rUrl) rUrl.value = '';
+        if (rImg) {
+          rImg.src = rImg.getAttribute('data-default-src') || '';
+        }
+      }
+    });
+
+    document.addEventListener('change', function (e) {
+      var urlInput = e.target.closest('[data-media-card] [data-media-url]');
+      if (!urlInput) return;
+      var card = urlInput.closest('[data-media-card]');
+      if (!card) return;
+      var idInput = card.querySelector('[data-media-id]');
+      var previewImg = card.querySelector('.laico-media-card-preview img');
+      if (idInput) idInput.value = '';
+      if (previewImg) {
+        previewImg.src = urlInput.value.trim() || previewImg.getAttribute('data-default-src') || '';
       }
     });
 
@@ -125,21 +133,31 @@
       syncEnFields();
     }
 
-    // 4. Automatically reveal `#laico_about_page_meta` when editing the About page or choosing its template
+    // 4. Automatically reveal `#laico_about_page_meta` & `#laico_services_page_meta` when editing or choosing template
     var aboutBox = document.getElementById('laico_about_page_meta');
-    if (aboutBox) {
-      var syncAboutBoxVisibility = function (tpl, slug) {
-        var isAbout =
-          aboutBox.classList.contains('is-about-page-active') ||
-          slug === 'about' ||
-          (tpl && String(tpl).indexOf('template-about') !== -1);
-        aboutBox.classList.toggle('is-about-page-hidden', !isAbout);
+    var servicesBox = document.getElementById('laico_services_page_meta');
+    if (aboutBox || servicesBox) {
+      var syncSpecialMetaBoxes = function (tpl, slug) {
+        if (aboutBox) {
+          var isAbout =
+            aboutBox.classList.contains('is-about-page-active') ||
+            slug === 'about' ||
+            (tpl && String(tpl).indexOf('template-about') !== -1);
+          aboutBox.classList.toggle('is-about-page-hidden', !isAbout);
+        }
+        if (servicesBox) {
+          var isServices =
+            servicesBox.classList.contains('is-services-page-active') ||
+            slug === 'services' ||
+            (tpl && String(tpl).indexOf('template-services') !== -1);
+          servicesBox.classList.toggle('is-services-page-hidden', !isServices);
+        }
       };
 
       var classicTpl = document.getElementById('page_template');
       if (classicTpl) {
         classicTpl.addEventListener('change', function () {
-          syncAboutBoxVisibility(classicTpl.value, '');
+          syncSpecialMetaBoxes(classicTpl.value, '');
         });
       }
 
@@ -153,11 +171,96 @@
           var key = tpl + '|' + slug;
           if (key !== lastStateKey) {
             lastStateKey = key;
-            syncAboutBoxVisibility(tpl, slug);
+            syncSpecialMetaBoxes(tpl, slug);
           }
         });
       }
     }
+
+    // 4b. Repeatable `svc-row` controls inside `#laico-svc-rows-wrap`
+    var svcRowsWrap = document.getElementById('laico-svc-rows-wrap');
+    var addSvcRowBtn = document.getElementById('laico-add-svc-row');
+    var svcRowTemplate = document.getElementById('laico-svc-row-template');
+
+    function renumberSvcRows() {
+      if (!svcRowsWrap) return;
+      svcRowsWrap.querySelectorAll('[data-svc-row]').forEach(function (row, idx) {
+        var badge = row.querySelector('[data-svc-row-num]');
+        if (badge) badge.textContent = String(idx + 1);
+      });
+    }
+
+    if (svcRowsWrap) {
+      renumberSvcRows();
+
+      if (addSvcRowBtn && svcRowTemplate) {
+        addSvcRowBtn.addEventListener('click', function () {
+          var nextIdx = parseInt(svcRowsWrap.getAttribute('data-next-index') || '0', 10) + 1;
+          svcRowsWrap.setAttribute('data-next-index', String(nextIdx));
+          var token = 'new_' + nextIdx + '_' + Date.now();
+          var html = svcRowTemplate.innerHTML.replace(/__INDEX__/g, token);
+          var holder = document.createElement('div');
+          holder.innerHTML = html.trim();
+          var newRow = holder.firstElementChild;
+          if (newRow) {
+            svcRowsWrap.appendChild(newRow);
+            renumberSvcRows();
+            var titleField = newRow.querySelector('[data-svc-title-input]');
+            if (titleField) titleField.focus();
+          }
+        });
+      }
+
+      svcRowsWrap.addEventListener('click', function (e) {
+        var rmBtn = e.target.closest('[data-svc-remove]');
+        if (rmBtn) {
+          e.preventDefault();
+          var rowToRemove = rmBtn.closest('[data-svc-row]');
+          if (rowToRemove) {
+            rowToRemove.remove();
+            renumberSvcRows();
+          }
+          return;
+        }
+
+        var mvBtn = e.target.closest('[data-svc-move]');
+        if (mvBtn) {
+          e.preventDefault();
+          var rowToMove = mvBtn.closest('[data-svc-row]');
+          if (!rowToMove) return;
+          var dir = mvBtn.getAttribute('data-svc-move');
+          if (dir === 'up' && rowToMove.previousElementSibling) {
+            svcRowsWrap.insertBefore(rowToMove, rowToMove.previousElementSibling);
+            renumberSvcRows();
+          } else if (dir === 'down' && rowToMove.nextElementSibling) {
+            svcRowsWrap.insertBefore(rowToMove.nextElementSibling, rowToMove);
+            renumberSvcRows();
+          }
+        }
+      });
+
+      svcRowsWrap.addEventListener('input', function (e) {
+        var titleInput = e.target.closest('[data-svc-title-input]');
+        if (!titleInput) return;
+        var row = titleInput.closest('[data-svc-row]');
+        var heading = row && row.querySelector('[data-svc-row-heading]');
+        if (heading) {
+          heading.textContent = titleInput.value.trim() || 'ردیف خدمت جدید';
+        }
+      });
+    }
+
+    // 4c. Live toggle for IPPanel SMS Mode (`pattern` vs `text`) in Theme Settings -> Forms
+    document.querySelectorAll('[data-sms-mode-select]').forEach(function (selectEl) {
+      selectEl.addEventListener('change', function () {
+        var target = selectEl.getAttribute('data-sms-mode-select');
+        var mode = selectEl.value;
+        document.querySelectorAll('[data-sms-mode-panel^="' + target + ':"]').forEach(function (panel) {
+          var parts = (panel.getAttribute('data-sms-mode-panel') || '').split(':');
+          panel.style.display = parts[1] === mode ? '' : 'none';
+        });
+      });
+    });
 
     // 5. Multi-Image Project Gallery Picker (`#laico-pick-gallery`)
     var galleryBtn = document.getElementById('laico-pick-gallery');

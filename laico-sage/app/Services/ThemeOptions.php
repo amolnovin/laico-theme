@@ -104,6 +104,8 @@ final class ThemeOptions
             'opt_remove_wp_version' => true,
             'opt_disable_self_pingbacks' => true,
             'opt_instant_page_prefetch' => true,
+            'opt_page_loader' => true,
+            'opt_webp_uploads' => true,
 
             // --- Tab 4: SEO & Schema ---
             'seo_enable_builtin' => true,
@@ -131,6 +133,20 @@ final class ThemeOptions
             'form_success_title_en' => 'Your request is in.',
             'form_success_body_fa' => 'تیم طراحی ظرف ۴۸ ساعت کاری برای جلسه اول با شما تماس می‌گیرد.',
             'form_success_body_en' => 'The design team will call within 48 working hours to arrange the first meeting.',
+
+            // --- Tab 5b: IPPanel Core SMS Notifications (Admin & Customer) ---
+            'sms_ippanel_token' => '',
+            'sms_admin_enable' => false,
+            'sms_admin_phones' => '',
+            'sms_admin_mode' => 'pattern',
+            'sms_admin_pattern_code' => '',
+            'sms_admin_pattern_vars' => "name={name}\nphone={phone}\ntype={project_type}\npage={source_page}",
+            'sms_admin_text_template' => "درخواست مشاوره جدید در لایکودیزاین (#{id})\nنام: {name}\nتلفن: {phone_local}\nبخش: {project_type}\nصفحه: {source_page}",
+            'sms_customer_enable' => false,
+            'sms_customer_mode' => 'pattern',
+            'sms_customer_pattern_code' => '',
+            'sms_customer_pattern_vars' => "name={name}\nid={id}",
+            'sms_customer_text_template' => '{name} عزیز، درخواست مشاوره شما در لایکودیزاین با کد پیگیری #{id} ثبت شد. همکاران ما به‌زودی با شما تماس می‌گیرند.',
 
             // --- Tab 6: Patch Updater ---
             'patch_auto_backup' => true,
@@ -227,6 +243,14 @@ final class ThemeOptions
         $textareaFields = [
             'home_lede_fa', 'home_lede_en', 'seo_home_description_fa',
             'seo_home_description_en', 'form_success_body_fa', 'form_success_body_en',
+            'sms_admin_pattern_vars', 'sms_admin_text_template',
+            'sms_customer_pattern_vars', 'sms_customer_text_template',
+        ];
+
+        $richInlineFields = [
+            'footer_tagline_fa', 'footer_tagline_en',
+            'footer_copy_fa', 'footer_copy_en',
+            'footer_credit_fa', 'footer_credit_en',
         ];
 
         $codeFields = ['seo_head_code', 'seo_footer_code'];
@@ -250,6 +274,8 @@ final class ThemeOptions
 
             if ($key === 'default_language') {
                 $clean[$key] = in_array($rawVal, ['fa', 'en'], true) ? (string) $rawVal : 'fa';
+            } elseif (in_array($key, ['sms_admin_mode', 'sms_customer_mode'], true)) {
+                $clean[$key] = in_array($rawVal, ['pattern', 'text'], true) ? (string) $rawVal : 'pattern';
             } elseif ($key === 'brand_color') {
                 $clean[$key] = sanitize_hex_color((string) $rawVal) ?: '#0b1d33';
             } elseif (in_array($key, ['email', 'form_notify_email'], true)) {
@@ -258,6 +284,8 @@ final class ThemeOptions
             } elseif (in_array($key, $urlFields, true)) {
                 $trimmed = trim((string) $rawVal);
                 $clean[$key] = ($trimmed === '' || $trimmed === '#') ? '' : esc_url_raw($trimmed);
+            } elseif (in_array($key, $richInlineFields, true)) {
+                $clean[$key] = trim(wp_kses((string) $rawVal, \App\Support\Bilingual::allowedInlineHtml()));
             } elseif (in_array($key, $textareaFields, true)) {
                 $clean[$key] = sanitize_textarea_field((string) $rawVal);
             } elseif (in_array($key, $codeFields, true)) {
@@ -267,6 +295,10 @@ final class ThemeOptions
             } else {
                 $clean[$key] = sanitize_text_field((string) $rawVal);
             }
+        }
+
+        if (array_key_exists('sms_ippanel_token', $input) && trim((string) $clean['sms_ippanel_token']) !== '') {
+            update_option(IppanelSmsService::tokenOptionName(), trim((string) $clean['sms_ippanel_token']));
         }
 
         if (array_key_exists('enable_english', $input)) {

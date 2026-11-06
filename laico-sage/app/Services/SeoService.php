@@ -285,7 +285,7 @@ final class SeoService
             return $defaultOg;
         }
 
-        return laico_asset('images/hero.jpg');
+        return laico_asset('images/hero.webp');
     }
 
     /**
@@ -295,7 +295,7 @@ final class SeoService
     {
         $siteUrl = home_url('/');
         $siteName = get_bloginfo('name') ?: 'لایکو دیزاین';
-        $logoUrl = (string) ThemeOptions::get('logo_url', '') ?: laico_asset('images/logo2.png');
+        $logoUrl = (string) ThemeOptions::get('logo_url', '') ?: laico_asset('images/logo2.webp');
 
         $sameAs = array_values(array_filter([
             (string) ThemeOptions::get('social_instagram', ''),

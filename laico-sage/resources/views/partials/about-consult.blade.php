@@ -8,7 +8,7 @@
 <section class="about-consult" aria-labelledby="{{ esc_attr($titleId) }}">
   <div class="about-consult-grid has-photo">
     <div class="consult-photo">
-      <img src="{{ esc_url(laico_asset('images/contact-form.jpg')) }}" alt="نشیمن با مبل سرمه‌ای و نمای شهر" width="452" height="560" loading="lazy">
+      <img src="{{ esc_url(laico_asset('images/contact-form.webp')) }}" alt="نشیمن با مبل سرمه‌ای و نمای شهر" width="452" height="560" loading="lazy" decoding="async">
     </div>
 
     @if (!$panelEnd)
@@ -38,6 +38,7 @@
           <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="شماره تماس" data-i18n-placeholder="f-phone" required>
           <span class="field-error"></span>
         </label>
+        @include('partials.math-captcha')
         <div class="about-field about-field-note" data-field="note">
           <label class="visually-hidden" for="{{ esc_attr($noteId) }}">{!! laico_bi('متن پیام', 'Message') !!}</label>
           <div class="about-note-box">

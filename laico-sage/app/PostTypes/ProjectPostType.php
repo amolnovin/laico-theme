@@ -368,7 +368,7 @@ final class ProjectPostType
             </p>
             <details style="margin-top:8px;">
               <summary style="cursor:pointer;color:#6d7e90;font-size:12px;">آدرس مستقیم تصاویر گالری (هر خط یک URL — اختیاری در صورت عدم استفاده از کتابخانه رسانه)</summary>
-              <textarea name="laico_gallery_urls" rows="3" class="widefat" dir="ltr" style="margin-top:6px;" placeholder="https://.../img1.jpg"><?php echo esc_textarea($galleryUrls); ?></textarea>
+              <textarea name="laico_gallery_urls" rows="3" class="widefat" dir="ltr" style="margin-top:6px;" placeholder="https://.../img1.webp"><?php echo esc_textarea($galleryUrls); ?></textarea>
             </details>
           </div>
 
@@ -383,7 +383,7 @@ final class ProjectPostType
           <div class="laico-meta-field">
             <label for="laico_video_poster"><strong>پوستر ویدیو (اختیاری — پیش‌فرض: تصویر شاخص پروژه)</strong></label>
             <div class="laico-media-input-row">
-              <input type="url" id="laico_video_poster" name="laico_video_poster" value="<?php echo esc_attr($videoPoster); ?>" class="widefat" dir="ltr" placeholder="https://.../poster.jpg">
+              <input type="url" id="laico_video_poster" name="laico_video_poster" value="<?php echo esc_attr($videoPoster); ?>" class="widefat" dir="ltr" placeholder="https://.../poster.webp">
               <button type="button" class="button laico-pick-media" data-target="#laico_video_poster">انتخاب تصویر پوستر</button>
             </div>
           </div>
