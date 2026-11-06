@@ -39,7 +39,8 @@
 .svc-media img {
   border-radius: var(--radius, 12px);
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: auto;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
 }
@@ -112,13 +113,26 @@
   color: rgba(255, 255, 255, 0.82);
   text-align: start;
 }
-.svc-why-media img {
-  border-radius: var(--radius-lg, 20px);
+.svc-why-media {
   width: 100%;
-  aspect-ratio: 4 / 3.5;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-lg, 20px);
+  border: 6px solid rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+}
+.svc-why-media img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
-  border: 6px solid rgba(255, 255, 255, 0.9);
+  border: 0;
+  border-radius: 0;
+}
+.mo-on .svc-why-media.mo-par img {
+  scale: 1;
+  translate: none;
+  will-change: auto;
 }
 
 /* ---------- consultation ---------- */
@@ -217,11 +231,11 @@
   .svc-row { grid-template-columns: 1fr; gap: 22px; padding-block: 26px; }
   .svc-row .svc-media { order: -1; }
   .svc-row .svc-copy { order: 0; }
-  .svc-media img { aspect-ratio: 16 / 9; }
+  .svc-media img { aspect-ratio: 1 / 1; }
   .svc-copy { padding-block: 0; }
   .svc-copy p { max-width: none; }
   .svc-why-inner { grid-template-columns: 1fr; }
-  .svc-why-media { max-width: 420px; }
+  .svc-why-media { max-width: 380px; aspect-ratio: 1 / 1; }
   .svc-consult-grid { grid-template-columns: 1fr; }
   .svc-form-col { padding-inline: 0; }
 }
@@ -231,11 +245,15 @@
   .svc-copy h2 { font-size: clamp(19px, 5.4vw, 23px); line-height: 1.6; }
   .svc-copy p { font-size: 14px; line-height: 2; margin-bottom: 20px; }
   .svc-media { padding: 5px; }
-  .svc-media img { aspect-ratio: 3 / 2; }
+  .svc-media img { aspect-ratio: 1 / 1; }
   .svc-btn { font-size: 13px; padding: 11px 18px; }
   .svc-why-copy p { font-size: 15px; line-height: 2; }
-  .svc-why-media img {
-  border-radius: var(--radius-lg, 20px); aspect-ratio: 3 / 2; }
+  .svc-why-media {
+    border-radius: var(--radius-lg, 20px);
+    border-width: 4px;
+    aspect-ratio: 1 / 1;
+  }
+  .svc-why-media img { aspect-ratio: 1 / 1; }
   .svc-panel { padding: 26px 22px; }
   .svc-panel h2 { font-size: 24px; }
   .svc-field input, .svc-field textarea { padding: 14px 15px; font-size: 14.5px; }

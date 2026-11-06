@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\PostTypes;
 
 use App\Services\ThemeOptions;
+use App\Support\Hero;
 use App\Support\ViteAssets;
 
 /**
@@ -411,8 +412,8 @@ final class PageAndPostMeta
                 $attId,
                 $customUrl,
                 ViteAssets::assetUrl($defaultAsset),
-                1100,
-                760,
+                600,
+                600,
                 $alt
             );
 
@@ -451,8 +452,8 @@ final class PageAndPostMeta
             $whyAttId,
             $whyUrl,
             ViteAssets::assetUrl($whyDef['asset']),
-            1100,
-            880,
+            370,
+            370,
             $whyAlt !== '' ? $whyAlt : $whyDef['alt']
         );
 
@@ -504,15 +505,14 @@ final class PageAndPostMeta
         string $alt
     ): array {
         if ($attachmentId > 0) {
-            $img = wp_get_attachment_image_src($attachmentId, 'full') ?: wp_get_attachment_image_src($attachmentId, 'large');
-            if (is_array($img) && ! empty($img[0])) {
-                $wpAlt = trim((string) get_post_meta($attachmentId, '_wp_attachment_image_alt', true));
+            $orig = Hero::resolveOriginalAttachment($attachmentId);
+            if ($orig !== null && $orig['url'] !== '') {
                 return [
-                    'url' => (string) $img[0],
-                    'srcset' => (string) (wp_get_attachment_image_srcset($attachmentId, 'large') ?: ''),
-                    'width' => (int) ($img[1] ?: $defaultWidth),
-                    'height' => (int) ($img[2] ?: $defaultHeight),
-                    'alt' => $alt !== '' ? $alt : ($wpAlt !== '' ? $wpAlt : ''),
+                    'url' => $orig['url'],
+                    'srcset' => '',
+                    'width' => (int) ($orig['width'] ?: $defaultWidth),
+                    'height' => (int) ($orig['height'] ?: $defaultHeight),
+                    'alt' => $alt !== '' ? $alt : ($orig['alt'] !== '' ? $orig['alt'] : ''),
                 ];
             }
         }
@@ -569,7 +569,7 @@ final class PageAndPostMeta
         $teamImgUrl = trim((string) get_post_meta($id, '_laico_about_team_img_url', true));
         $teamImgAlt = (string) get_post_meta($id, '_laico_about_team_img_alt', true);
         $defaultTeamUrl = ViteAssets::assetUrl('images/about-team.webp');
-        $teamPreviewUrl = $teamImgUrl !== '' ? $teamImgUrl : ($teamImgId > 0 ? (string) (wp_get_attachment_image_url($teamImgId, 'large') ?: $defaultTeamUrl) : $defaultTeamUrl);
+        $teamPreviewUrl = $teamImgUrl !== '' ? $teamImgUrl : ($teamImgId > 0 ? (string) (wp_get_attachment_image_url($teamImgId, 'full') ?: $defaultTeamUrl) : $defaultTeamUrl);
         ?>
         <input type="hidden" name="laico_about_meta_present" value="1">
 
@@ -617,7 +617,7 @@ final class PageAndPostMeta
                   $cUrl = trim((string) get_post_meta($id, "_laico_about_collage_{$idx}_url", true));
                   $cAlt = (string) get_post_meta($id, "_laico_about_collage_{$idx}_alt", true);
                   $defAssetUrl = ViteAssets::assetUrl($def['asset']);
-                  $previewUrl = $cUrl !== '' ? $cUrl : ($cId > 0 ? (string) (wp_get_attachment_image_url($cId, 'medium_large') ?: $defAssetUrl) : $defAssetUrl);
+                  $previewUrl = $cUrl !== '' ? $cUrl : ($cId > 0 ? (string) (wp_get_attachment_image_url($cId, 'full') ?: $defAssetUrl) : $defAssetUrl);
               ?>
                 <div class="laico-media-card" data-media-card>
                   <div class="laico-media-card-top">
@@ -744,7 +744,7 @@ final class PageAndPostMeta
         $whyImgUrl = trim((string) get_post_meta($id, '_laico_svc_why_img_url', true));
         $whyImgAlt = (string) get_post_meta($id, '_laico_svc_why_img_alt', true) ?: $whyDef['alt'];
         $defaultWhyAssetUrl = ViteAssets::assetUrl($whyDef['asset']);
-        $whyPreviewUrl = $whyImgUrl !== '' ? $whyImgUrl : ($whyImgId > 0 ? (string) (wp_get_attachment_image_url($whyImgId, 'medium_large') ?: $defaultWhyAssetUrl) : $defaultWhyAssetUrl);
+        $whyPreviewUrl = $whyImgUrl !== '' ? $whyImgUrl : ($whyImgId > 0 ? (string) (wp_get_attachment_image_url($whyImgId, 'full') ?: $defaultWhyAssetUrl) : $defaultWhyAssetUrl);
 
         $renderRowCard = static function (string $idxToken, array $row, array $spaceOptions, bool $enEnabled, string $manageSpacesUrl): void {
             $rShow = ! isset($row['show']) || ($row['show'] !== false && $row['show'] !== '0' && $row['show'] !== 0);
@@ -760,7 +760,7 @@ final class PageAndPostMeta
             $rImgAlt = (string) ($row['img_alt'] ?? '');
             $defAsset = ! empty($row['default_asset']) ? (string) $row['default_asset'] : 'images/services-clinic.webp';
             $defAssetUrl = ViteAssets::assetUrl($defAsset);
-            $previewUrl = $rImgUrl !== '' ? $rImgUrl : ($rImgId > 0 ? (string) (wp_get_attachment_image_url($rImgId, 'medium_large') ?: $defAssetUrl) : $defAssetUrl);
+            $previewUrl = $rImgUrl !== '' ? $rImgUrl : ($rImgId > 0 ? (string) (wp_get_attachment_image_url($rImgId, 'full') ?: $defAssetUrl) : $defAssetUrl);
             ?>
             <div class="laico-svc-admin-row" data-svc-row>
               <div class="laico-svc-admin-row-head">

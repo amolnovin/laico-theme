@@ -256,7 +256,14 @@ html[dir="rtl"] .svc-form input[name="phone"]::placeholder {
   display: none;
 }
 
-/* Gutenberg Content Compatibility inside `.ar-body`, `.pd-text`, and `.prose` */
+/* Gutenberg & Classic Editor Content Compatibility inside `.ar-body`, `.pd-text`, and `.prose` */
+.ar-body img,
+.pd-text img,
+.prose img {
+  max-width: 100%;
+  height: auto;
+}
+
 .ar-body figure.wp-block-image,
 .pd-text figure.wp-block-image,
 .prose figure.wp-block-image {

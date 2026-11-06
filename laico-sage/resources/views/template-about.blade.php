@@ -70,7 +70,6 @@
           @if (!empty($item['show']))
             <img class="{{ esc_attr($item['class']) }}"
                  src="{{ esc_url($item['url']) }}"
-                 @if (!empty($item['srcset'])) srcset="{{ esc_attr($item['srcset']) }}" sizes="(max-width: 720px) 50vw, 45vw" @endif
                  alt="{{ esc_attr($item['alt']) }}"
                  width="{{ (int) $item['width'] }}"
                  height="{{ (int) $item['height'] }}"
@@ -90,7 +89,6 @@
         @if (!empty($about['show_team_image']) && !empty($about['team_image']['url']))
           <div class="about-team-media" style="margin-bottom:32px;border-radius:var(--radius-lg, 20px);overflow:hidden;">
             <img src="{{ esc_url($about['team_image']['url']) }}"
-                 @if (!empty($about['team_image']['srcset'])) srcset="{{ esc_attr($about['team_image']['srcset']) }}" sizes="(max-width: 1180px) 100vw, 1120px" @endif
                  alt="{{ esc_attr($about['team_image']['alt']) }}"
                  width="{{ (int) $about['team_image']['width'] }}"
                  height="{{ (int) $about['team_image']['height'] }}"

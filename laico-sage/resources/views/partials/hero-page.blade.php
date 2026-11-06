@@ -14,8 +14,7 @@
 
 <section class="{{ $heroClass }}" id="top">
   <div class="hero-media">
-    <img src="{{ esc_url($hero['url']) }}"
-         @if(!empty($hero['srcset'])) srcset="{{ esc_attr($hero['srcset']) }}" sizes="{{ esc_attr($hero['sizes'] ?? '100vw') }}" @endif
+    <img src="{{ esc_url($hero['url'] ?? $hero['image_url'] ?? '') }}"
          alt="{{ esc_attr($hero['alt'] ?? '') }}"
          width="{{ (int) ($hero['width'] ?? 1376) }}"
          height="{{ (int) ($hero['height'] ?? 768) }}"

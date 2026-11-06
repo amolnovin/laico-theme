@@ -513,8 +513,7 @@ final class ThemeSettingsPage
             'sec_home_projects' => 'نمایش بخش «۰۲ — پروژه‌های منتخب» (موزاییک ۴ پروژهٔ ویژه از بخش پروژه‌ها)',
             'sec_home_about' => 'نمایش بخش «۰۳ — استودیو و شمارنده‌های آمار»',
             'sec_home_craft' => 'نمایش بخش «۰۴ — مرام ساخت و متریال صادق»',
-            'sec_home_journal' => 'نمایش بخش «۰۵ — آخرین مقالات مجله از نوشته‌های وردپرس»',
-            'sec_home_cta' => 'نمایش بخش «۰۶ — فرم دعوت به مشاوره» در پایین صفحه اصلی',
+            'sec_home_cta' => 'نمایش بخش «۰۵ — فرم دعوت به مشاوره» در پایین صفحه اصلی',
         ];
         ?>
         <div class="laico-card">
@@ -1162,7 +1161,7 @@ final class ThemeSettingsPage
             'general' => ['enable_english', 'enable_lang_switcher'],
             'sections' => [
                 'sec_home_collections', 'sec_home_projects', 'sec_home_about',
-                'sec_home_craft', 'sec_home_journal', 'sec_home_cta',
+                'sec_home_craft', 'sec_home_cta',
             ],
             'optimization' => [
                 'opt_disable_emojis', 'opt_disable_embeds', 'opt_remove_dashicons_guest',

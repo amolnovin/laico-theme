@@ -20,7 +20,6 @@
   <article class="ar">
     <figure class="ar-cover">
       <img src="{{ esc_url($article['image']['url']) }}"
-           @if(!empty($article['image']['srcset'])) srcset="{{ esc_attr($article['image']['srcset']) }}" sizes="(max-width: 1024px) 100vw, 960px" @endif
            alt="{{ esc_attr($article['title_fa']) }}"
            data-alt-fa="{{ esc_attr($article['title_fa']) }}"
            data-alt-en="{{ esc_attr($article['title_en']) }}"

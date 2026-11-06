@@ -25,8 +25,33 @@ final class OptimizationService
         add_filter('wp_lazy_loading_enabled', [$this, 'filterLazyLoading']);
         add_action('send_headers', [$this, 'sendSecurityHeaders']);
 
+        // Preserve original upload dimensions & quality across all sections of the theme
+        add_filter('big_image_size_threshold', '__return_false', 20);
+        add_filter('jpeg_quality', static fn (): int => 95, 20);
+        add_filter('wp_editor_set_quality', static fn (): int => 95, 20);
+
+        if (! is_admin()) {
+            // Prevent browsers from downgrading to blurry WP sub-sizes (300w / 768w / 1024w)
+            add_filter('wp_calculate_image_srcset', '__return_false', 20);
+            add_filter('wp_content_img_tag', static function (string $filteredImage, string $context, int $attachmentId): string {
+                if ($attachmentId <= 0) {
+                    return $filteredImage;
+                }
+                $orig = Hero::resolveOriginalAttachment($attachmentId);
+                if ($orig === null || $orig['url'] === '') {
+                    return $filteredImage;
+                }
+                $updated = preg_replace('/\s+(?:srcset|sizes)=(["\']).*?\1/i', '', $filteredImage) ?? $filteredImage;
+                $updated = preg_replace('/(\ssrc=["\'])[^"\']+(["\'])/i', '${1}' . esc_url($orig['url']) . '${2}', $updated, 1) ?? $updated;
+                if ($orig['width'] > 0 && $orig['height'] > 0) {
+                    $updated = preg_replace('/(\swidth=["\'])\d+(["\'])/i', '${1}' . $orig['width'] . '${2}', $updated, 1) ?? $updated;
+                    $updated = preg_replace('/(\sheight=["\'])\d+(["\'])/i', '${1}' . $orig['height'] . '${2}', $updated, 1) ?? $updated;
+                }
+                return $updated;
+            }, 20, 3);
+        }
+
         if ((bool) ThemeOptions::get('opt_webp_uploads', true)) {
-            add_filter('big_image_size_threshold', '__return_false');
             add_filter('image_editor_output_format', static function (array $formats): array {
                 if (function_exists('wp_image_editor_supports') && wp_image_editor_supports(['mime_type' => 'image/webp'])) {
                     $formats['image/jpeg'] = 'image/webp';
@@ -34,9 +59,6 @@ final class OptimizationService
                 }
                 return $formats;
             });
-            add_filter('wp_editor_set_quality', static function (int $quality, string $mimeType): int {
-                return $mimeType === 'image/webp' ? 92 : $quality;
-            }, 10, 2);
         }
 
         if ((bool) ThemeOptions::get('opt_disable_xmlrpc', true)) {

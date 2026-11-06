@@ -7,7 +7,6 @@
 <a class="{{ $cardClass }}" href="{{ esc_url($item['url']) }}">
   <span class="jr-media">
     <img src="{{ esc_url($item['image']['url']) }}"
-         @if(!empty($item['image']['srcset'])) srcset="{{ esc_attr($item['image']['srcset']) }}" sizes="{{ $isFeatured ? '(max-width: 900px) 100vw, 60vw' : '(max-width: 900px) 100vw, 33vw' }}" @endif
          alt="{{ esc_attr($item['title_fa']) }}"
          data-alt-fa="{{ esc_attr($item['title_fa']) }}"
          data-alt-en="{{ esc_attr($item['title_en']) }}"

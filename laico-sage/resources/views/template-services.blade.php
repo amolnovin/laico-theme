@@ -28,10 +28,9 @@
         <article class="svc-row {{ $loop->even ? 'svc-row--rev' : '' }}">
           <div class="svc-media">
             <img src="{{ esc_url($img['url']) }}"
-                 @if (!empty($img['srcset'])) srcset="{{ esc_attr($img['srcset']) }}" sizes="(max-width: 900px) 100vw, 50vw" @endif
                  alt="{{ esc_attr($img['alt']) }}"
                  width="{{ (int) ($img['width'] ?: 600) }}"
-                 height="{{ (int) ($img['height'] ?: 450) }}"
+                 height="{{ (int) ($img['height'] ?: 600) }}"
                  loading="lazy"
                  decoding="async">
           </div>
@@ -77,10 +76,9 @@
         @if (!empty($svcPage['show_why_image']) && !empty($svcPage['why_image']['url']))
           <div class="svc-why-media">
             <img src="{{ esc_url($svcPage['why_image']['url']) }}"
-                 @if (!empty($svcPage['why_image']['srcset'])) srcset="{{ esc_attr($svcPage['why_image']['srcset']) }}" sizes="(max-width: 900px) 100vw, 400px" @endif
                  alt="{{ esc_attr($svcPage['why_image']['alt']) }}"
-                 width="{{ (int) ($svcPage['why_image']['width'] ?: 369) }}"
-                 height="{{ (int) ($svcPage['why_image']['height'] ?: 322) }}"
+                 width="{{ (int) ($svcPage['why_image']['width'] ?: 370) }}"
+                 height="{{ (int) ($svcPage['why_image']['height'] ?: 370) }}"
                  loading="lazy"
                  decoding="async">
           </div>
