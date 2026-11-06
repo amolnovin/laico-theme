@@ -28,6 +28,7 @@ final class ThemeKernel
         }
         self::$booted = true;
 
+        (new ManagerRoleService())->register();
         (new SecurityIntegrationService())->register();
         (new IppanelSmsService())->register();
         (new ProjectPostType())->register();

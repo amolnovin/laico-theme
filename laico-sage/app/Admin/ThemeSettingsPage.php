@@ -62,8 +62,11 @@ final class ThemeSettingsPage
             'optimization' => 'بهینه‌سازی و سرعت',
             'seo' => 'تنظیمات سئو',
             'forms' => 'فرم‌ها و اعلان',
-            'patch' => 'بروزرسانی با پچ (Patch)',
         ];
+
+        if (current_user_can('update_themes')) {
+            $subTabs['patch'] = 'بروزرسانی با پچ (Patch)';
+        }
 
         foreach ($subTabs as $tabKey => $label) {
             $slug = $tabKey === 'general' ? self::MENU_SLUG : self::MENU_SLUG . '&tab=' . $tabKey;
@@ -250,8 +253,11 @@ final class ThemeSettingsPage
             'optimization' => 'بهینه‌سازی و سرعت',
             'seo' => 'تنظیمات سئو',
             'forms' => 'فرم‌ها و اعلان‌ها',
-            'patch' => 'بروزرسانی از طریق پچ (Patch)',
         ];
+
+        if (current_user_can('update_themes')) {
+            $tabs['patch'] = 'بروزرسانی از طریق پچ (Patch)';
+        }
 
         $activeTab = isset($_GET['tab']) ? sanitize_key(wp_unslash((string) $_GET['tab'])) : 'general';
         if (! array_key_exists($activeTab, $tabs)) {
