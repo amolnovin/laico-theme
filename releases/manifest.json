@@ -1,9 +1,9 @@
 {
   "target_theme": "laico-sage",
-  "latest_version": "1.5.1",
-  "min_version": "1.5.0",
-  "released_at": "2026-11-06T09:00:00Z",
-  "patch_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-patch-1.5.0-to-1.5.1.zip",
-  "full_zip_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-sage-v1.5.1.zip",
-  "changelog": "نسخه ۱.۵.۱:\n• اصلاح ابعاد تصاویر بخش خدمات (svc-media) به نسبت ۱:۱ با حفظ کامل قاب و کیفیت برابر با ابعاد اصلی\n• اصلاح تصویر بخش چرا لایکودیزاین (svc-why-media mo-par) به نسبت ۱:۱ با کیفیت برابر با ابعاد اصلی و حذف زوم محوکننده\n• بارگذاری نسخهٔ اصلی بدون افت کیفیت و بدون برش/کوچک‌سازی خودکار وردپرس برای تمام تصاویر در تمامی بخش‌های قالب\n• حذف سکشن «مجله لایکو» از صفحهٔ اصلی"
+  "latest_version": "1.5.2",
+  "min_version": "1.5.1",
+  "released_at": "2026-11-06T10:00:00Z",
+  "patch_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-patch-1.5.1-to-1.5.2.zip",
+  "full_zip_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-sage-v1.5.2.zip",
+  "changelog": "نسخه ۱.۵.۲:\n• افزودن نقش کاربری جدید «مدیر» (laico_manager) با دسترسی اختصاصی به پیشخوان، نوشته‌ها، برگه‌ها، رسانه، پروژه‌ها (laico_project)، فرم‌های ارسالی (laico-submissions)، تنظیمات لایکو (laico-settings) و تنظیمات وردپرس (options-general.php)\n• محدودسازی خودکار منوهای پیشخوان و جلوگیری از دسترسی مستقیم به بخش‌های غیرمجاز (افزونه‌ها، پوسته‌ها، کاربران، ابزارها و دیدگاه‌ها) برای نقش «مدیر»"
 }
