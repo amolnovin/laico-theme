@@ -23,6 +23,7 @@
     document.removeEventListener("keydown", onKey);
     overlay.remove();
     overlay = null;
+    document.documentElement.style.overflow = "";
     document.body.style.overflow = "";
     if (opener) opener.focus();
   }
@@ -50,6 +51,7 @@
       '<button type="button" class="lb-btn lb-next" aria-label="' + (en() ? "Next image" : "تصویر بعدی") + '">' + nextGlyph + "</button>" +
       '<span class="lb-count" dir="ltr"></span>';
     document.body.appendChild(overlay);
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     overlay.addEventListener("click", function (e) { if (e.target === overlay) close(); });
     overlay.querySelector(".lb-close").addEventListener("click", close);

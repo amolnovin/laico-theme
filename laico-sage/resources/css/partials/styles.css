@@ -94,13 +94,14 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
 }
 
 body {
   margin: 0;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font);
   font-weight: 400;
   font-size: 16px;
@@ -1222,6 +1223,8 @@ html[dir="rtl"] .project-card { direction: rtl; }
   .collection-grid {
     display: flex;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y pinch-zoom;
     scroll-snap-type: x mandatory;
     gap: 10px;
     padding-inline: 16px;
@@ -1710,7 +1713,6 @@ html {
   scroll-padding-top: calc(var(--header) + 12px);
 }
 [hidden] { display: none !important; }
-body { overscroll-behavior-y: none; }
 :focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; border-radius: 4px; }
 .site-header :focus-visible,
 .hero :focus-visible,

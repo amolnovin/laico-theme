@@ -1,9 +1,9 @@
 {
   "target_theme": "laico-sage",
-  "latest_version": "1.5.2",
-  "min_version": "1.5.1",
-  "released_at": "2026-11-06T10:00:00Z",
-  "patch_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-patch-1.5.1-to-1.5.2.zip",
-  "full_zip_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-sage-v1.5.2.zip",
-  "changelog": "نسخه ۱.۵.۲:\n• افزودن نقش کاربری جدید «مدیر» (laico_manager) با دسترسی اختصاصی به پیشخوان، نوشته‌ها، برگه‌ها، رسانه، پروژه‌ها (laico_project)، فرم‌های ارسالی (laico-submissions)، تنظیمات لایکو (laico-settings) و تنظیمات وردپرس (options-general.php)\n• محدودسازی خودکار منوهای پیشخوان و جلوگیری از دسترسی مستقیم به بخش‌های غیرمجاز (افزونه‌ها، پوسته‌ها، کاربران، ابزارها و دیدگاه‌ها) برای نقش «مدیر»"
+  "latest_version": "1.5.3",
+  "min_version": "1.5.2",
+  "released_at": "2026-11-06T10:30:00Z",
+  "patch_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-patch-1.5.2-to-1.5.3.zip",
+  "full_zip_url": "https://github.com/amolnovin/laico-theme/raw/main/releases/laico-sage-v1.5.3.zip",
+  "changelog": "نسخه ۱.۵.۳:\n• رفع کامل مشکل کار نکردن اسکرول عمودی با لمس (Touch Scroll) در موبایل و تبلت با جایگزینی overflow-x: hidden تودرتو با overflow-x: clip و حذف overscroll-behavior-y: none روی body\n• حفظ کامل مخفی بودن اسکرول افقی (چپ و راست) در تمامی صفحات و حالت‌های ریسپانسیو"
 }

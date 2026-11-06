@@ -275,6 +275,7 @@
   function setMenu(open) {
     if (!header) return;
     header.classList.toggle("is-open", open);
+    document.documentElement.style.overflow = open ? "hidden" : "";
     document.body.style.overflow = open ? "hidden" : "";
     if (burger) burger.setAttribute("aria-expanded", open ? "true" : "false");
   }
@@ -291,6 +292,9 @@
   });
   window.addEventListener("resize", function () {
     if (window.innerWidth > 1180) setMenu(false);
+  });
+  window.addEventListener("pageshow", function () {
+    setMenu(false);
   });
 
   /* active nav */
@@ -694,7 +698,7 @@
       if (e.ctrlKey || e.defaultPrevented) return;
       if (e.deltaMode === 0 && Math.abs(e.deltaY) < 50) return;            // trackpad
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      if (document.body.style.overflow === "hidden") return;                // menu / lightbox open
+      if (document.documentElement.style.overflow === "hidden" || document.body.style.overflow === "hidden") return; // menu / lightbox open
       var el = e.target;
       while (el && el !== document.body && el.nodeType === 1) {
         var st = window.getComputedStyle(el);
