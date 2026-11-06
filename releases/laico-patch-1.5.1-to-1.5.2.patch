@@ -1,0 +1,497 @@
+diff --git a/laico-sage/app/Admin/ThemeSettingsPage.php b/laico-sage/app/Admin/ThemeSettingsPage.php
+index 65d48fb..9ae2ced 100644
+--- a/laico-sage/app/Admin/ThemeSettingsPage.php
++++ b/laico-sage/app/Admin/ThemeSettingsPage.php
+@@ -62,9 +62,12 @@ final class ThemeSettingsPage
+             'optimization' => 'بهینه‌سازی و سرعت',
+             'seo' => 'تنظیمات سئو',
+             'forms' => 'فرم‌ها و اعلان',
+-            'patch' => 'بروزرسانی با پچ (Patch)',
+         ];
+ 
++        if (current_user_can('update_themes')) {
++            $subTabs['patch'] = 'بروزرسانی با پچ (Patch)';
++        }
++
+         foreach ($subTabs as $tabKey => $label) {
+             $slug = $tabKey === 'general' ? self::MENU_SLUG : self::MENU_SLUG . '&tab=' . $tabKey;
+             add_submenu_page(
+@@ -250,9 +253,12 @@ final class ThemeSettingsPage
+             'optimization' => 'بهینه‌سازی و سرعت',
+             'seo' => 'تنظیمات سئو',
+             'forms' => 'فرم‌ها و اعلان‌ها',
+-            'patch' => 'بروزرسانی از طریق پچ (Patch)',
+         ];
+ 
++        if (current_user_can('update_themes')) {
++            $tabs['patch'] = 'بروزرسانی از طریق پچ (Patch)';
++        }
++
+         $activeTab = isset($_GET['tab']) ? sanitize_key(wp_unslash((string) $_GET['tab'])) : 'general';
+         if (! array_key_exists($activeTab, $tabs)) {
+             $activeTab = 'general';
+diff --git a/laico-sage/app/Services/ManagerRoleService.php b/laico-sage/app/Services/ManagerRoleService.php
+new file mode 100644
+index 0000000..38d0234
+--- /dev/null
++++ b/laico-sage/app/Services/ManagerRoleService.php
+@@ -0,0 +1,409 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Services;
++
++use App\Admin\SubmissionsAdminPage;
++use App\Admin\ThemeSettingsPage;
++use App\PostTypes\ProjectPostType;
++
++/**
++ * Registers and enforces the custom «مدیر» (`laico_manager`) WordPress role.
++ *
++ * Grants full operational access strictly to:
++ * 1. پیشخوان (`index.php`)
++ * 2. نوشته‌ها (`edit.php`, categories & tags)
++ * 3. برگه‌ها (`edit.php?post_type=page`)
++ * 4. رسانه (`upload.php`, `media-new.php`)
++ * 5. پروژه‌ها (`edit.php?post_type=laico_project` + project taxonomies)
++ * 6. فرم‌های ارسالی (`admin.php?page=laico-submissions`)
++ * 7. تنظیمات لایکو (`admin.php?page=laico-settings`)
++ * 8. تنظیمات وردپرس (`options-general.php` and core settings subpages)
++ */
++final class ManagerRoleService
++{
++    public const ROLE_SLUG = 'laico_manager';
++    public const ROLE_NAME = 'مدیر';
++    private const ROLE_VERSION = '1.0.0';
++    private const VERSION_OPTION = 'laico_manager_role_version';
++
++    /** @var array<int, string> */
++    private const ALLOWED_TOP_MENUS = [
++        'index.php',
++        'edit.php',
++        'upload.php',
++        'edit.php?post_type=page',
++        'edit.php?post_type=' . ProjectPostType::POST_TYPE,
++        SubmissionsAdminPage::MENU_SLUG,
++        ThemeSettingsPage::MENU_SLUG,
++        'options-general.php',
++        'profile.php',
++    ];
++
++    /** @var array<int, string> */
++    private const ALLOWED_CORE_OPTION_SUBMENUS = [
++        'options-general.php',
++        'options-writing.php',
++        'options-reading.php',
++        'options-discussion.php',
++        'options-media.php',
++        'options-permalink.php',
++        'options-privacy.php',
++    ];
++
++    /** @var array<int, string> */
++    private const ALLOWED_OPTION_GROUPS = [
++        'general',
++        'writing',
++        'reading',
++        'discussion',
++        'media',
++        'permalink',
++        'privacy',
++    ];
++
++    /** @var array<int, string> */
++    private const ALLOWED_POST_TYPES = [
++        '',
++        'post',
++        'page',
++        ProjectPostType::POST_TYPE,
++        'attachment',
++        'revision',
++        'wp_block',
++    ];
++
++    /** @var array<int, string> */
++    private const ALLOWED_TAXONOMIES = [
++        '',
++        'category',
++        'post_tag',
++        'post_format',
++        ProjectPostType::TAX_CATEGORY,
++        ProjectPostType::TAX_SPACE,
++        ProjectPostType::TAX_CITY,
++    ];
++
++    public function register(): void
++    {
++        add_action('init', [$this, 'syncRole'], 5);
++        add_action('after_switch_theme', [$this, 'forceSyncRole']);
++
++        add_action('admin_menu', [$this, 'restrictAdminMenus'], 9999);
++        add_action('admin_init', [$this, 'guardDirectAdminScreens'], 1);
++        add_action('wp_before_admin_bar_render', [$this, 'cleanupAdminBar'], 999);
++        add_action('wp_dashboard_setup', [$this, 'cleanupDashboardWidgets'], 999);
++
++        add_filter('editable_roles', [$this, 'filterEditableRoles']);
++        add_filter('pre_update_option_default_role', [$this, 'preventAdminDefaultRoleEscalation'], 10, 2);
++    }
++
++    /**
++     * Ensure the `laico_manager` («مدیر») role exists with up-to-date capabilities.
++     */
++    public function syncRole(): void
++    {
++        $installedVersion = (string) get_option(self::VERSION_OPTION, '');
++        $existingRole = get_role(self::ROLE_SLUG);
++
++        if ($existingRole !== null && $installedVersion === self::ROLE_VERSION) {
++            return;
++        }
++
++        $this->forceSyncRole();
++    }
++
++    public function forceSyncRole(): void
++    {
++        $desiredCaps = self::capabilities();
++        $role = get_role(self::ROLE_SLUG);
++
++        if ($role === null) {
++            add_role(self::ROLE_SLUG, self::ROLE_NAME, $desiredCaps);
++        } else {
++            // Update display name in wp_user_roles if needed and synchronize exact capabilities
++            $wpRoles = wp_roles();
++            if (isset($wpRoles->roles[self::ROLE_SLUG])) {
++                $wpRoles->roles[self::ROLE_SLUG]['name'] = self::ROLE_NAME;
++                $wpRoles->role_names[self::ROLE_SLUG] = self::ROLE_NAME;
++            }
++
++            foreach (array_keys($role->capabilities) as $existingCap) {
++                if (! isset($desiredCaps[$existingCap])) {
++                    $role->remove_cap((string) $existingCap);
++                }
++            }
++            foreach ($desiredCaps as $cap => $grant) {
++                if ($grant) {
++                    $role->add_cap($cap, true);
++                }
++            }
++        }
++
++        update_option(self::VERSION_OPTION, self::ROLE_VERSION, true);
++    }
++
++    /**
++     * Exact capability map for the «مدیر» (`laico_manager`) role.
++     *
++     * @return array<string, bool>
++     */
++    public static function capabilities(): array
++    {
++        return [
++            // Dashboard & Profile
++            'read' => true,
++            'level_0' => true,
++            'level_1' => true,
++            'level_2' => true,
++            'level_3' => true,
++            'level_4' => true,
++            'level_5' => true,
++            'level_6' => true,
++            'level_7' => true,
++
++            // Media Library (`upload.php`, `media-new.php`) & Rich Content Embeds
++            'upload_files' => true,
++            'unfiltered_html' => true,
++
++            // Posts & `laico_project` CPT + Taxonomies
++            'edit_posts' => true,
++            'edit_others_posts' => true,
++            'edit_published_posts' => true,
++            'edit_private_posts' => true,
++            'publish_posts' => true,
++            'delete_posts' => true,
++            'delete_others_posts' => true,
++            'delete_published_posts' => true,
++            'delete_private_posts' => true,
++            'read_private_posts' => true,
++            'manage_categories' => true,
++
++            // Pages (`edit.php?post_type=page`)
++            'edit_pages' => true,
++            'edit_others_pages' => true,
++            'edit_published_pages' => true,
++            'edit_private_pages' => true,
++            'publish_pages' => true,
++            'delete_pages' => true,
++            'delete_others_pages' => true,
++            'delete_published_pages' => true,
++            'delete_private_pages' => true,
++            'read_private_pages' => true,
++
++            // Form Submissions (`laico-submissions`), Theme Settings (`laico-settings`) & WP Settings (`options-general.php`)
++            'manage_options' => true,
++        ];
++    }
++
++    /**
++     * Whether the current logged-in user is a `laico_manager` (and NOT a full Administrator).
++     */
++    public static function isRestrictedManager(): bool
++    {
++        if (! is_user_logged_in()) {
++            return false;
++        }
++
++        $user = wp_get_current_user();
++        if (! ($user instanceof \WP_User) || $user->ID <= 0) {
++            return false;
++        }
++
++        if (is_super_admin($user->ID)) {
++            return false;
++        }
++
++        $roles = (array) $user->roles;
++        if (in_array('administrator', $roles, true) || user_can($user, 'activate_plugins')) {
++            return false;
++        }
++
++        return in_array(self::ROLE_SLUG, $roles, true);
++    }
++
++    /**
++     * Prune disallowed top-level & plugin submenu items so `مدیر` sees only the 8 permitted sections.
++     */
++    public function restrictAdminMenus(): void
++    {
++        if (! self::isRestrictedManager()) {
++            return;
++        }
++
++        global $menu, $submenu;
++
++        if (is_array($menu)) {
++            foreach ($menu as $item) {
++                $slug = isset($item[2]) ? (string) $item[2] : '';
++                if ($slug === '' || str_starts_with($slug, 'separator')) {
++                    continue;
++                }
++                if (! in_array($slug, self::ALLOWED_TOP_MENUS, true)) {
++                    remove_menu_page($slug);
++                }
++            }
++        }
++
++        // Under Dashboard (`index.php`), keep only the main Dashboard home item
++        if (isset($submenu['index.php']) && is_array($submenu['index.php'])) {
++            foreach ($submenu['index.php'] as $subItem) {
++                $subSlug = isset($subItem[2]) ? (string) $subItem[2] : '';
++                if ($subSlug !== '' && $subSlug !== 'index.php') {
++                    remove_submenu_page('index.php', $subSlug);
++                }
++            }
++        }
++
++        // Under WordPress Settings (`options-general.php`), keep native WP settings subpages only
++        if (isset($submenu['options-general.php']) && is_array($submenu['options-general.php'])) {
++            foreach ($submenu['options-general.php'] as $subItem) {
++                $subSlug = isset($subItem[2]) ? (string) $subItem[2] : '';
++                if ($subSlug !== '' && ! in_array($subSlug, self::ALLOWED_CORE_OPTION_SUBMENUS, true)) {
++                    remove_submenu_page('options-general.php', $subSlug);
++                }
++            }
++        }
++    }
++
++    /**
++     * Block direct URL access to disallowed WordPress or plugin admin screens for `laico_manager`.
++     */
++    public function guardDirectAdminScreens(): void
++    {
++        if (! self::isRestrictedManager()) {
++            return;
++        }
++
++        if (wp_doing_ajax() || wp_doing_cron() || (defined('REST_REQUEST') && REST_REQUEST)) {
++            return;
++        }
++
++        global $pagenow;
++        $script = is_string($pagenow) ? $pagenow : '';
++        $pluginPage = isset($_GET['page']) ? sanitize_key(wp_unslash((string) $_GET['page'])) : '';
++
++        // 1. Custom admin pages (`?page=...`): allow only `laico-submissions` and `laico-settings`
++        if ($pluginPage !== '') {
++            if (! in_array($pluginPage, [SubmissionsAdminPage::MENU_SLUG, ThemeSettingsPage::MENU_SLUG], true)) {
++                $this->denyAccess();
++            }
++            return;
++        }
++
++        // 2. Dashboard, Profile, Media & Post/Page/Project Editor workflows
++        if (in_array($script, ['index.php', 'profile.php', 'upload.php', 'media-new.php', 'media.php', 'media-upload.php', 'async-upload.php', 'admin-post.php'], true)) {
++            return;
++        }
++
++        if (in_array($script, ['edit.php', 'post-new.php', 'post.php', 'revision.php'], true)) {
++            $postType = isset($_GET['post_type']) ? sanitize_key(wp_unslash((string) $_GET['post_type'])) : '';
++            if ($postType === '') {
++                $postId = isset($_GET['post']) ? (int) $_GET['post'] : (isset($_POST['post_ID']) ? (int) $_POST['post_ID'] : 0);
++                if ($postId > 0) {
++                    $detected = get_post_type($postId);
++                    $postType = is_string($detected) ? $detected : '';
++                }
++            }
++            if (! in_array($postType, self::ALLOWED_POST_TYPES, true)) {
++                $this->denyAccess();
++            }
++            return;
++        }
++
++        if (in_array($script, ['edit-tags.php', 'term.php'], true)) {
++            $tax = isset($_GET['taxonomy'])
++                ? sanitize_key(wp_unslash((string) $_GET['taxonomy']))
++                : (isset($_POST['taxonomy']) ? sanitize_key(wp_unslash((string) $_POST['taxonomy'])) : '');
++            if (! in_array($tax, self::ALLOWED_TAXONOMIES, true)) {
++                $this->denyAccess();
++            }
++            return;
++        }
++
++        // 3. WordPress Core Settings screens (`options-general.php` and native `options-*.php`)
++        if (in_array($script, self::ALLOWED_CORE_OPTION_SUBMENUS, true)) {
++            return;
++        }
++
++        // 4. `options.php` POST handler for saving native WordPress Settings forms (disallow raw GET dump)
++        if ($script === 'options.php') {
++            $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
++            $optionPage = isset($_POST['option_page']) ? sanitize_key(wp_unslash((string) $_POST['option_page'])) : '';
++            if ($method === 'POST' && in_array($optionPage, self::ALLOWED_OPTION_GROUPS, true)) {
++                return;
++            }
++            $this->denyAccess();
++        }
++
++        // Deny everything else (plugins, themes, users, tools, comments, site-health, updates, etc.)
++        $this->denyAccess();
++    }
++
++    /**
++     * Remove disallowed nodes (Comments, Updates, Customize/Themes) from the top Admin Bar for `laico_manager`.
++     */
++    public function cleanupAdminBar(): void
++    {
++        if (! self::isRestrictedManager()) {
++            return;
++        }
++
++        global $wp_admin_bar;
++        if (! is_object($wp_admin_bar)) {
++            return;
++        }
++
++        foreach (['comments', 'updates', 'customize', 'themes', 'widgets', 'menus'] as $nodeId) {
++            $wp_admin_bar->remove_node($nodeId);
++        }
++    }
++
++    /**
++     * Remove Dashboard widgets that point to disallowed screens (Site Health & Comments) for `laico_manager`.
++     */
++    public function cleanupDashboardWidgets(): void
++    {
++        if (! self::isRestrictedManager()) {
++            return;
++        }
++
++        remove_meta_box('dashboard_site_health', 'dashboard', 'normal');
++        remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
++    }
++
++    /**
++     * Hide `administrator` in role dropdowns (e.g. `default_role` on `options-general.php`) for `laico_manager`.
++     *
++     * @param array<string, array<string, mixed>> $roles
++     * @return array<string, array<string, mixed>>
++     */
++    public function filterEditableRoles(array $roles): array
++    {
++        if (self::isRestrictedManager()) {
++            unset($roles['administrator']);
++        }
++        return $roles;
++    }
++
++    /**
++     * Prevent privilege escalation via `default_role` option on `options-general.php`.
++     */
++    public function preventAdminDefaultRoleEscalation(mixed $newValue, mixed $oldValue): mixed
++    {
++        if (self::isRestrictedManager() && $newValue === 'administrator') {
++            return $oldValue ?: 'subscriber';
++        }
++        return $newValue;
++    }
++
++    private function denyAccess(): never
++    {
++        wp_die(
++            'شما اجازه دسترسی به این بخش را ندارید.',
++            'عدم دسترسی',
++            ['response' => 403, 'back_link' => true]
++        );
++    }
++}
+diff --git a/laico-sage/app/Services/ThemeKernel.php b/laico-sage/app/Services/ThemeKernel.php
+index 2042197..02bec4b 100644
+--- a/laico-sage/app/Services/ThemeKernel.php
++++ b/laico-sage/app/Services/ThemeKernel.php
+@@ -28,6 +28,7 @@ final class ThemeKernel
+         }
+         self::$booted = true;
+ 
++        (new ManagerRoleService())->register();
+         (new SecurityIntegrationService())->register();
+         (new IppanelSmsService())->register();
+         (new ProjectPostType())->register();
+diff --git a/laico-sage/functions.php b/laico-sage/functions.php
+index 3727b12..3382828 100644
+--- a/laico-sage/functions.php
++++ b/laico-sage/functions.php
+@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
+     exit;
+ }
+ 
+-define('LAICO_THEME_VERSION', '1.5.1');
++define('LAICO_THEME_VERSION', '1.5.2');
+ define('LAICO_THEME_DIR', get_template_directory());
+ define('LAICO_THEME_URI', get_template_directory_uri());
+ 
+diff --git a/laico-sage/package.json b/laico-sage/package.json
+index 7fccb88..56540db 100644
+--- a/laico-sage/package.json
++++ b/laico-sage/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "laico-sage",
+-  "version": "1.5.1",
++  "version": "1.5.2",
+   "private": true,
+   "type": "module",
+   "engines": {
+diff --git a/laico-sage/style.css b/laico-sage/style.css
+index f57bd21..1898766 100644
+--- a/laico-sage/style.css
++++ b/laico-sage/style.css
+@@ -2,7 +2,7 @@
+ Theme Name:         Laico Design (Sage)
+ Theme URI:          https://github.com/amolnovin/laico-theme
+ Description:        قالب اختصاصی استودیو معماری داخلی و سیستم آشپزخانه لوکس لایکو دیزاین — پیاده‌سازی‌شده بر پایه فریم‌ورک Roots Sage (Blade + Acorn + Vite)، دوزبانه (فارسی/انگلیسی)، دارای پنل تنظیمات جامع، سیستم پروژه‌ها، مجله، مدیریت فرم‌ها، سئو، بهینه‌سازی و سیستم بروزرسانی امن از طریق Patch.
+-Version:            1.5.1
++Version:            1.5.2
+ Author:             Laico Design / Amol Novin
+ Author URI:         https://github.com/amolnovin
+ Text Domain:        laico
