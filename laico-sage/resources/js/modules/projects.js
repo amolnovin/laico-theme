@@ -26,6 +26,73 @@
     page: 1
   };
 
+  // Sync initial filters from URL query string (e.g. `/projects/?space=hall#prj-list` from `/services` `svc-btn`)
+  var hasUrlSpaceOrCat = false;
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var qCat = params.get("category");
+    var qSpace = params.get("space");
+    var qCity = params.get("city");
+    var qYear = params.get("year");
+    var qSize = params.get("size");
+    var qSearch = params.get("q");
+
+    if (qCat) {
+      state.category = qCat;
+      hasUrlSpaceOrCat = true;
+    }
+    if (qSpace) {
+      state.space = qSpace;
+      hasUrlSpaceOrCat = true;
+    }
+    if (qCity && selects.city && selects.city.querySelector('option[value="' + CSS.escape(qCity) + '"]')) {
+      selects.city.value = qCity;
+    }
+    if (qYear && selects.year && selects.year.querySelector('option[value="' + CSS.escape(qYear) + '"]')) {
+      selects.year.value = qYear;
+    }
+    if (qSize && selects.size && selects.size.querySelector('option[value="' + CSS.escape(qSize) + '"]')) {
+      selects.size.value = qSize;
+    }
+    if (qSearch && search) {
+      state.q = qSearch;
+      search.value = qSearch;
+    }
+  } catch (e) {}
+
+  function syncActiveFilterButtons() {
+    if (tabs.length) {
+      var matchedTab = tabs.some(function (b) { return b.getAttribute("data-category") === state.category; });
+      if (!matchedTab) state.category = "all";
+      tabs.forEach(function (b) {
+        b.classList.toggle("is-active", b.getAttribute("data-category") === state.category);
+      });
+    }
+    if (pills.length) {
+      var matchedPill = pills.some(function (b) { return b.getAttribute("data-space-filter") === state.space; });
+      if (!matchedPill) state.space = "all";
+      pills.forEach(function (b) {
+        b.classList.toggle("is-active", b.getAttribute("data-space-filter") === state.space);
+      });
+    }
+  }
+
+  function syncUrlQuery() {
+    if (!window.history || !window.history.replaceState) return;
+    try {
+      var u = new URL(window.location.href);
+      if (state.category && state.category !== "all") u.searchParams.set("category", state.category);
+      else u.searchParams.delete("category");
+
+      if (state.space && state.space !== "all") u.searchParams.set("space", state.space);
+      else u.searchParams.delete("space");
+
+      window.history.replaceState(null, "", u.pathname + u.search + u.hash);
+    } catch (e) {}
+  }
+
+  syncActiveFilterButtons();
+
   var dict = {
     fa: { count: "{n} پروژه", prev: "قبلی", next: "بعدی", page: "صفحه" },
     en: { count: "{n} projects", prev: "Previous", next: "Next", page: "Page" }
@@ -47,9 +114,15 @@
     render("quiet");
   }
 
+  function hasToken(attrVal, singleVal, wanted) {
+    if (singleVal === wanted) return true;
+    if (!attrVal) return false;
+    return attrVal.split(/\s+/).indexOf(wanted) !== -1;
+  }
+
   function matches(card) {
-    if (state.category !== "all" && card.getAttribute("data-category") !== state.category) return false;
-    if (state.space !== "all" && card.getAttribute("data-space") !== state.space) return false;
+    if (state.category !== "all" && !hasToken(card.getAttribute("data-categories"), card.getAttribute("data-category"), state.category)) return false;
+    if (state.space !== "all" && !hasToken(card.getAttribute("data-spaces"), card.getAttribute("data-space"), state.space)) return false;
     var city = selects.city ? selects.city.value : "all";
     var year = selects.year ? selects.year.value : "all";
     var size = selects.size ? selects.size.value : "all";
@@ -128,6 +201,7 @@
     tab.addEventListener("click", function () {
       state.category = tab.getAttribute("data-category");
       tabs.forEach(function (b) { b.classList.toggle("is-active", b === tab); });
+      syncUrlQuery();
       render(true);
     });
   });
@@ -135,6 +209,7 @@
     pill.addEventListener("click", function () {
       state.space = pill.getAttribute("data-space-filter");
       pills.forEach(function (b) { b.classList.toggle("is-active", b === pill); });
+      syncUrlQuery();
       render(true);
     });
   });
@@ -146,4 +221,13 @@
   });
 
   translateControls();
+
+  if (hasUrlSpaceOrCat) {
+    var filterSec = document.getElementById("prj-list");
+    if (filterSec) {
+      setTimeout(function () {
+        filterSec.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 60);
+    }
+  }
 })();

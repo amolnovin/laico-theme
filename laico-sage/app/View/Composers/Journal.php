@@ -117,7 +117,7 @@ final class Journal extends Composer
 
         // Featured image (`post-thumbnail`)
         $thumbId = (int) get_post_thumbnail_id($id);
-        $imgUrl = ViteAssets::assetUrl('images/detail.jpg');
+        $imgUrl = ViteAssets::assetUrl('images/detail.webp');
         $srcset = '';
         $w = 1200;
         $h = 800;

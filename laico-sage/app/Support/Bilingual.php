@@ -7,6 +7,49 @@ namespace App\Support;
 final class Bilingual
 {
     /**
+     * Allowed inline HTML tags for rich footer/lead text (`<a>`, `<strong>`, `<b>`, `<em>`, `<br>`, `<span>`).
+     *
+     * @return array<string, array<string, bool>>
+     */
+    public static function allowedInlineHtml(): array
+    {
+        return [
+            'a' => [
+                'href' => true,
+                'title' => true,
+                'target' => true,
+                'rel' => true,
+                'class' => true,
+                'style' => true,
+            ],
+            'strong' => [
+                'class' => true,
+                'style' => true,
+            ],
+            'b' => [
+                'class' => true,
+                'style' => true,
+            ],
+            'em' => [
+                'class' => true,
+                'style' => true,
+            ],
+            'i' => [
+                'class' => true,
+                'style' => true,
+            ],
+            'span' => [
+                'class' => true,
+                'style' => true,
+                'dir' => true,
+            ],
+            'br' => [
+                'class' => true,
+            ],
+        ];
+    }
+
+    /**
      * Render a bilingual span pair compatible with Laico's client-side language switcher.
      * If English text is omitted, falls back cleanly to Persian text so content is never blank.
      */
@@ -15,13 +58,14 @@ final class Bilingual
         $enText = trim($en) !== '' ? $en : $fa;
         $bilingualEnabled = \App\Services\ThemeOptions::isEnglishEnabled();
         $defaultLang = $bilingualEnabled ? (string) \App\Services\ThemeOptions::get('default_lang', 'fa') : 'fa';
+        $allowed = self::allowedInlineHtml();
 
         if (! $bilingualEnabled) {
-            return $allowInlineHtml ? wp_kses_post($fa) : esc_html($fa);
+            return $allowInlineHtml ? wp_kses($fa, $allowed) : esc_html($fa);
         }
 
-        $safeFa = $allowInlineHtml ? wp_kses_post($fa) : esc_html($fa);
-        $safeEn = $allowInlineHtml ? wp_kses_post($enText) : esc_html($enText);
+        $safeFa = $allowInlineHtml ? wp_kses($fa, $allowed) : esc_html($fa);
+        $safeEn = $allowInlineHtml ? wp_kses($enText, $allowed) : esc_html($enText);
 
         $faHidden = $defaultLang === 'en' ? ' hidden' : '';
         $enHidden = $defaultLang === 'en' ? '' : ' hidden';

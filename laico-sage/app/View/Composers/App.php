@@ -26,7 +26,7 @@ final class App extends Composer
         $opt = ThemeOptions::all();
         $logoUrl = trim((string) ($opt['logo_url'] ?? ''));
         if ($logoUrl === '') {
-            $logoUrl = ViteAssets::assetUrl('images/logo2.png');
+            $logoUrl = ViteAssets::assetUrl('images/logo2.webp');
         }
 
         return [

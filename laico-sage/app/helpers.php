@@ -60,12 +60,19 @@ if (! function_exists('laico_bi')) {
 
 if (! function_exists('laico_asset')) {
     /**
-     * Return public URI to a static theme resource in resources/{images,fonts,video}/.
+     * Return public URI to a static theme resource in resources/{images,fonts,video}/,
+     * preferring Vite-bundled `.webp` assets automatically.
      */
     function laico_asset(string $relativePath): string
     {
         $clean = ltrim($relativePath, '/');
-        return trailingslashit(LAICO_THEME_URI) . 'resources/' . $clean;
+        if (preg_match('/\.(?:jpe?g|png)$/i', $clean) === 1) {
+            $webpRel = (string) preg_replace('/\.(?:jpe?g|png)$/i', '.webp', $clean);
+            if (is_file(LAICO_THEME_DIR . '/resources/' . $webpRel)) {
+                $clean = $webpRel;
+            }
+        }
+        return \App\Support\ViteAssets::assetUrl($clean);
     }
 }
 

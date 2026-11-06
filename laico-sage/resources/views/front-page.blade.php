@@ -12,7 +12,7 @@
         'title_en' => 'Firouzkuh Mountain Residence',
         'space_fa' => 'معماری',
         'space_en' => 'Architecture',
-        'image' => ['url' => laico_asset('images/firouzkuh.jpeg')],
+        'image' => ['url' => laico_asset('images/firouzkuh.webp')],
       ],
       [
         'url' => $navUrls['projects'] ?? home_url('/projects/'),
@@ -20,7 +20,7 @@
         'title_en' => 'Naghsh-e Doozak Kindergarten',
         'space_fa' => 'آموزشی',
         'space_en' => 'Educational',
-        'image' => ['url' => laico_asset('images/kindergarten.jpeg')],
+        'image' => ['url' => laico_asset('images/kindergarten.webp')],
       ],
       [
         'url' => $navUrls['projects'] ?? home_url('/projects/'),
@@ -28,7 +28,7 @@
         'title_en' => 'Boutique Athletic Club',
         'space_fa' => 'ورزشی',
         'space_en' => 'Sports',
-        'image' => ['url' => laico_asset('images/gym.jpeg')],
+        'image' => ['url' => laico_asset('images/gym.webp')],
       ],
       [
         'url' => $navUrls['projects'] ?? home_url('/projects/'),
@@ -36,11 +36,11 @@
         'title_en' => 'Amol Specialty Café',
         'space_fa' => 'کافه و رستوران',
         'space_en' => 'Café & restaurant',
-        'image' => ['url' => laico_asset('images/cafe-amol.jpeg')],
+        'image' => ['url' => laico_asset('images/cafe-amol.webp')],
       ],
     ];
 
-    $whyBgUrl = laico_asset('images/hero-services.jpg');
+    $whyBgUrl = laico_asset('images/hero-services.webp');
     $phoneDisplay = (string) ($themeOpt['phone_primary'] ?? '۰۹۱۲۰۸۹۸۹۳۸');
     $phoneTel = preg_replace('/[^\d+]/', '', (string) ($themeOpt['phone_primary_tel'] ?? '+989120898938')) ?: '+989120898938';
   @endphp
@@ -60,7 +60,7 @@
       </div>
       <div class="collection-grid">
         <a class="collection-card" href="{{ esc_url($navUrls['kitchen'] ?? home_url('/kitchen/')) }}">
-          <img src="{{ esc_url(laico_asset('images/col-kitchen.jpg')) }}" alt="آشپزخانه" width="570" height="776" loading="lazy">
+          <img src="{{ esc_url(laico_asset('images/col-kitchen.webp')) }}" alt="آشپزخانه" width="570" height="776" loading="lazy">
           <span class="shade"></span>
           <span class="collection-label">
             <span class="name" data-i18n="col-kitchen">آشپزخانه</span>
@@ -68,7 +68,7 @@
           </span>
         </a>
         <a class="collection-card" href="{{ esc_url($navUrls['living'] ?? home_url('/living/')) }}">
-          <img src="{{ esc_url(laico_asset('images/col-living.jpg')) }}" alt="پذیرایی و اتاق" width="568" height="776" loading="lazy">
+          <img src="{{ esc_url(laico_asset('images/col-living.webp')) }}" alt="پذیرایی و اتاق" width="568" height="776" loading="lazy">
           <span class="shade"></span>
           <span class="collection-label">
             <span class="name" data-i18n="col-living">پذیرایی و اتاق</span>
@@ -76,7 +76,7 @@
           </span>
         </a>
         <a class="collection-card" href="{{ esc_url($navUrls['bath'] ?? home_url('/bath/')) }}">
-          <img src="{{ esc_url(laico_asset('images/col-bath.jpg')) }}" alt="حمام" width="568" height="776" loading="lazy">
+          <img src="{{ esc_url(laico_asset('images/col-bath.webp')) }}" alt="حمام" width="568" height="776" loading="lazy">
           <span class="shade"></span>
           <span class="collection-label">
             <span class="name" data-i18n="col-bath">حمام</span>
@@ -84,7 +84,7 @@
           </span>
         </a>
         <a class="collection-card" href="{{ esc_url($navUrls['cafe'] ?? home_url('/cafe/')) }}">
-          <img src="{{ esc_url(laico_asset('images/col-cafe.jpg')) }}" alt="کافه و رستوران" width="570" height="776" loading="lazy">
+          <img src="{{ esc_url(laico_asset('images/col-cafe.webp')) }}" alt="کافه و رستوران" width="570" height="776" loading="lazy">
           <span class="shade"></span>
           <span class="collection-label">
             <span class="name" data-i18n="col-cafe">کافه و رستوران</span>
@@ -159,7 +159,7 @@
   @if(!empty($themeOpt['sec_home_craft']))
     <section class="systems" id="systems">
       <div class="systems-visual">
-        <img src="{{ esc_url(laico_asset('images/detail.jpg')) }}" alt="سیستم‌ها و متریال لایکو" width="1256" height="938" loading="lazy">
+        <img src="{{ esc_url(laico_asset('images/detail.webp')) }}" alt="سیستم‌ها و متریال لایکو" width="1256" height="938" loading="lazy">
       </div>
       <div class="systems-copy">
         <p class="eyebrow" data-i18n="sys-eye">۰۴ — سیستم‌ها و متریال</p>

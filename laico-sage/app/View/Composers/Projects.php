@@ -61,6 +61,25 @@ final class Projects extends Composer
             }
         }
 
+        if (! empty($_GET['category']) && is_string($_GET['category'])) {
+            $reqCat = sanitize_title(wp_unslash($_GET['category']));
+            if ($reqCat !== '') {
+                $initialFilters['category'] = $reqCat;
+            }
+        }
+        if (! empty($_GET['space']) && is_string($_GET['space'])) {
+            $reqSpace = sanitize_title(wp_unslash($_GET['space']));
+            if ($reqSpace !== '') {
+                $initialFilters['space'] = $reqSpace;
+            }
+        }
+        if (! empty($_GET['city']) && is_string($_GET['city'])) {
+            $reqCity = sanitize_title(wp_unslash($_GET['city']));
+            if ($reqCity !== '') {
+                $initialFilters['city'] = $reqCity;
+            }
+        }
+
         return [
             'hero' => Hero::resolve('projects'),
             'projectsList' => self::queryAllProjects(),
@@ -98,6 +117,8 @@ final class Projects extends Composer
         $catTerm = self::firstTerm($id, ProjectPostType::TAX_CATEGORY);
         $spaceTerm = self::firstTerm($id, ProjectPostType::TAX_SPACE);
         $cityTerm = self::firstTerm($id, ProjectPostType::TAX_CITY);
+        $allCats = self::allTermSlugs($id, ProjectPostType::TAX_CATEGORY);
+        $allSpaces = self::allTermSlugs($id, ProjectPostType::TAX_SPACE);
 
         $year = trim((string) get_post_meta($id, '_laico_year', true)) ?: '1404';
         $yearEn = trim((string) get_post_meta($id, '_laico_year_en', true)) ?: Jalali::approximateGregorianYear($year);
@@ -121,9 +142,11 @@ final class Projects extends Composer
             'lede_fa' => $ledeFa,
             'lede_en' => $ledeEn,
             'category_slug' => $catTerm['slug'] ?: 'residential',
+            'category_slugs' => ! empty($allCats) ? implode(' ', $allCats) : ($catTerm['slug'] ?: 'residential'),
             'category_fa' => $catTerm['fa'] ?: 'مسکونی',
             'category_en' => $catTerm['en'] ?: 'Residential',
             'space_slug' => $spaceTerm['slug'] ?: 'kitchen',
+            'space_slugs' => ! empty($allSpaces) ? implode(' ', $allSpaces) : ($spaceTerm['slug'] ?: 'kitchen'),
             'space_fa' => $spaceTerm['fa'] ?: 'طراحی داخلی',
             'space_en' => $spaceTerm['en'] ?: 'Interior',
             'city_slug' => $cityTerm['slug'] ?: 'amol',
@@ -258,8 +281,8 @@ final class Projects extends Composer
      */
     public static function collectFilterTerms(): array
     {
-        $mapTerms = static function (string $tax, array $preferredSlugs = []): array {
-            $terms = get_terms(['taxonomy' => $tax, 'hide_empty' => true]);
+        $mapTerms = static function (string $tax, array $preferredSlugs = [], bool $hideEmpty = true): array {
+            $terms = get_terms(['taxonomy' => $tax, 'hide_empty' => $hideEmpty]);
             if (is_wp_error($terms) || ! is_array($terms)) {
                 return [];
             }
@@ -305,11 +328,29 @@ final class Projects extends Composer
         }
 
         return [
-            'categories' => $mapTerms(ProjectPostType::TAX_CATEGORY, ['residential', 'commercial']),
-            'spaces' => $mapTerms(ProjectPostType::TAX_SPACE, ['kitchen', 'living', 'bath', 'office', 'hall', 'architecture', 'educational', 'sports']),
-            'cities' => $mapTerms(ProjectPostType::TAX_CITY, ['amol', 'tehran', 'mazandaran', 'firouzkuh']),
+            'categories' => $mapTerms(ProjectPostType::TAX_CATEGORY, ['residential', 'commercial'], true),
+            'spaces' => $mapTerms(ProjectPostType::TAX_SPACE, ['kitchen', 'living', 'bath', 'office', 'hall', 'architecture', 'educational', 'sports'], false),
+            'cities' => $mapTerms(ProjectPostType::TAX_CITY, ['amol', 'tehran', 'mazandaran', 'firouzkuh'], true),
             'years' => $years,
         ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function allTermSlugs(int $postId, string $taxonomy): array
+    {
+        $terms = get_the_terms($postId, $taxonomy);
+        if (! is_array($terms)) {
+            return [];
+        }
+        $slugs = [];
+        foreach ($terms as $t) {
+            if ($t instanceof \WP_Term && $t->slug !== '') {
+                $slugs[] = $t->slug;
+            }
+        }
+        return array_values(array_unique($slugs));
     }
 
     /**
@@ -345,7 +386,7 @@ final class Projects extends Composer
         }
 
         return [
-            'url' => ViteAssets::assetUrl('images/projects-card.jpg'),
+            'url' => ViteAssets::assetUrl('images/projects-card.webp'),
             'srcset' => '',
             'width' => 1200,
             'height' => 900,

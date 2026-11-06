@@ -41,11 +41,22 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+ALLOWED_EXTENSIONS = {
+    "php", "css", "js", "mjs", "json", "svg", "png", "jpg", "jpeg",
+    "webp", "woff2", "mp4", "po", "mo", "pot", "md", "txt",
+}
+
+
+def is_patchable_path(rel_path: str) -> bool:
+    ext = Path(rel_path).suffix.lower().lstrip(".")
+    return ext in ALLOWED_EXTENSIONS and not rel_path.startswith("bin/")
+
+
 def collect_git_changes(git_range: str) -> tuple[list[str], list[str]]:
     repo_root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"], cwd=THEME_ROOT, text=True).strip()
     rel_theme = THEME_ROOT.relative_to(Path(repo_root))
     out = subprocess.check_output(
-        ["git", "diff", "--name-status", git_range, "--", str(rel_theme)],
+        ["git", "diff", "--no-renames", "--name-status", git_range, "--", str(rel_theme)],
         cwd=repo_root,
         text=True,
     )
@@ -58,6 +69,8 @@ def collect_git_changes(git_range: str) -> tuple[list[str], list[str]]:
         status, path = parts[0], parts[-1]
         if prefix and path.startswith(prefix):
             path = path[len(prefix) :]
+        if not is_patchable_path(path):
+            continue
         if status.startswith("D"):
             deleted.append(path)
         else:

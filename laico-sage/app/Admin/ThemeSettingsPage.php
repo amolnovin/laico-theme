@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Admin;
 
 use App\Services\DemoImporterService;
+use App\Services\IppanelSmsService;
 use App\Services\PatchUpdaterService;
+use App\Services\SecurityIntegrationService;
 use App\Services\SeoService;
 use App\Services\ThemeOptions;
 use App\Support\Jalali;
@@ -438,23 +440,36 @@ final class ThemeSettingsPage
         </div>
 
         <div class="laico-card">
-          <h2>متن‌های فوتر</h2>
-          <div class="laico-meta-grid laico-meta-grid--2col">
+          <h2>متن‌های فوتر (<code>footer-brand</code> و <code>footer-legal</code>)</h2>
+          <p class="description">در فیلدهای فوتر، استفاده از تگ لینک <code>&lt;a href="..." target="_blank" rel="noopener"&gt;...&lt;/a&gt;</code> و بولد <code>&lt;strong&gt;...&lt;/strong&gt;</code> یا <code>&lt;b&gt;...&lt;/b&gt;</code> کاملاً مجاز و فعال است.</p>
+          <div class="laico-meta-grid laico-meta-grid--2col" style="margin-top:12px;">
             <div class="laico-meta-field">
-              <label><strong>معرفی کوتاه زیر لوگوی فوتر (فارسی)</strong></label>
-              <input type="text" name="laico_opt[footer_tagline_fa]" value="<?php echo esc_attr((string) $opt['footer_tagline_fa']); ?>" class="widefat">
+              <label><strong>متن معرفی برند زیر لوگوی فوتر — <code>footer-brand</code> (فارسی)</strong></label>
+              <input type="text" name="laico_opt[footer_tagline_fa]" value="<?php echo esc_attr((string) $opt['footer_tagline_fa']); ?>" class="widefat" placeholder="لایکودیزاین مجموعه‌ی معماری و طراحی داخلی">
             </div>
             <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
-              <label><strong>معرفی کوتاه زیر لوگوی فوتر (انگلیسی)</strong></label>
+              <label><strong>متن معرفی برند زیر لوگوی فوتر (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[footer_tagline_en]" value="<?php echo esc_attr((string) $opt['footer_tagline_en']); ?>" class="widefat" dir="ltr">
             </div>
+
             <div class="laico-meta-field">
-              <label><strong>متن کپی‌رایت فوتر (فارسی)</strong></label>
-              <input type="text" name="laico_opt[footer_copy_fa]" value="<?php echo esc_attr((string) $opt['footer_copy_fa']); ?>" class="widefat">
+              <label><strong>متن کپی‌رایت در نوار پایین فوتر — <code>footer-legal</code> (فارسی)</strong></label>
+              <input type="text" name="laico_opt[footer_copy_fa]" value="<?php echo esc_attr((string) $opt['footer_copy_fa']); ?>" class="widefat" placeholder="تمامی حقوق این سایت محفوظ می‌باشد.">
+              <small style="color:#5c6f84;">پشتیبانی از تگ‌های <code>&lt;a&gt;</code> و <code>&lt;strong&gt;</code> / <code>&lt;b&gt;</code></small>
             </div>
             <div class="laico-meta-field">
-              <label><strong>امضای طراح فوتر (فارسی)</strong></label>
-              <input type="text" name="laico_opt[footer_credit_fa]" value="<?php echo esc_attr((string) $opt['footer_credit_fa']); ?>" class="widefat">
+              <label><strong>متن طراحی و اجرا در نوار پایین فوتر — <code>footer-legal</code> (فارسی)</strong></label>
+              <input type="text" name="laico_opt[footer_credit_fa]" value="<?php echo esc_attr((string) $opt['footer_credit_fa']); ?>" class="widefat" placeholder="طراحی و اجرا آمل نوین">
+              <small style="color:#5c6f84;">مثال: <code>طراحی و اجرا &lt;a href="https://amolnovin.ir" target="_blank" rel="noopener"&gt;&lt;strong&gt;آمل نوین&lt;/strong&gt;&lt;/a&gt;</code></small>
+            </div>
+
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
+              <label><strong>متن کپی‌رایت فوتر (انگلیسی)</strong></label>
+              <input type="text" name="laico_opt[footer_copy_en]" value="<?php echo esc_attr((string) $opt['footer_copy_en']); ?>" class="widefat" dir="ltr">
+            </div>
+            <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
+              <label><strong>متن طراحی و اجرا فوتر (انگلیسی)</strong></label>
+              <input type="text" name="laico_opt[footer_credit_en]" value="<?php echo esc_attr((string) $opt['footer_credit_en']); ?>" class="widefat" dir="ltr">
             </div>
           </div>
         </div>
@@ -585,6 +600,8 @@ final class ThemeSettingsPage
             'opt_remove_wp_version' => ['پنهان‌سازی نسخه وردپرس، RSD و wlwmanifest از هدر', 'پاک‌سازی تگ‌های غیرضروری <head> برای خروجی تمیز و امن.'],
             'opt_disable_self_pingbacks' => ['جلوگیری از ارسال پینگ‌بک داخلی (Self-Pingback)', 'عدم ایجاد بازتاب‌های خودکار هنگام لینک‌دهی داخلی در مقالات مجله.'],
             'opt_instant_page_prefetch' => ['پیش‌واکشی هوشمند لینک‌ها هنگام حرکت ماوس (Hover Prefetch)', 'بارگذاری پیش‌دستانهٔ صفحات داخلی هنگام قرارگیری نشانگر ماوس روی لینک‌های منو و کارت‌ها (فقط در اتصالات پرسرعت).'],
+            'opt_page_loader' => ['نمایش لودینگ ظریف در وسط صفحه هنگام جابجایی بین صفحات', 'نمایش انیمیشن لودینگ مرکزی هنگام کلیک روی لینک‌های داخلی با مدیریت هوشمند بازگشت مرورگر (BFCache).'],
+            'opt_webp_uploads' => ['تولید خودکار WebP با کیفیت و ابعاد اصلی برای تصاویر جدید کتابخانه رسانه', 'حفظ ابعاد اصلی تصاویر آپلودی و تولید نسخه‌های WebP با کیفیت ۹۲٪ در صورت پشتیبانی سرور.'],
         ];
         ?>
         <div class="laico-card">
@@ -692,10 +709,57 @@ final class ThemeSettingsPage
      */
     private function renderFormsTab(array $opt): void
     {
+        $secStatus = SecurityIntegrationService::statusSummary();
+        $smsStatus = IppanelSmsService::statusSummary();
+        $savedToken = IppanelSmsService::getToken();
         ?>
         <div class="laico-card">
+          <h2>وضعیت یکپارچه‌سازی امنیتی، کپچای ریاضی و سامانه پیامک</h2>
+          <div class="laico-env-pills" style="margin-top:8px;">
+            <span class="laico-env-pill <?php echo ! empty($secStatus['captcha_active']) ? 'is-ok' : 'is-warn'; ?>">
+              <?php if (! empty($secStatus['captcha_active'])) : ?>
+                ✓ کپچای ریاضی (WP Math Captcha <?php echo esc_html((string) $secStatus['captcha_version']); ?>): فعال روی تمام فرم‌های قالب
+              <?php elseif (! empty($secStatus['captcha_installed'])) : ?>
+                ⚠ افزونه WP Math Captcha نصب است اما از تنظیمات غیرفعال شده
+              <?php else : ?>
+                ○ افزونه WP Math Captcha نصب/فعال نیست (در صورت نصب، خودکار روی همه فرم‌ها فعال می‌شود)
+              <?php endif; ?>
+            </span>
+
+            <span class="laico-env-pill <?php echo ! empty($secStatus['novin_active']) ? 'is-ok' : 'is-warn'; ?>">
+              <?php if (! empty($secStatus['novin_active'])) : ?>
+                ✓ سپر امنیتی نوین (Novin Security <?php echo esc_html((string) $secStatus['novin_version']); ?>): <?php echo ! empty($secStatus['novin_safe_mode']) ? 'حالت اضطراری (Safe Mode)' : 'متصل و محافظت فعال'; ?>
+              <?php else : ?>
+                ○ افزونه Novin Security Suite نصب/فعال نیست
+              <?php endif; ?>
+            </span>
+
+            <span class="laico-env-pill <?php echo (! empty($smsStatus['plugin_active']) && ! empty($smsStatus['has_token'])) ? 'is-ok' : 'is-warn'; ?>">
+              <?php if (! empty($smsStatus['plugin_active']) && ! empty($smsStatus['has_token'])) : ?>
+                ✓ افزونه IPPanel Core (<?php echo esc_html((string) $smsStatus['plugin_version']); ?>): متصل و دارای کلید دسترسی فعال
+              <?php elseif (! empty($smsStatus['plugin_active'])) : ?>
+                ⚠ IPPanel Core فعال است — کلید دسترسی قالب را از «دسترسی افزونه‌ها» ایجاد کنید
+              <?php else : ?>
+                ○ افزونه IPPanel Core نصب/فعال نیست
+              <?php endif; ?>
+            </span>
+          </div>
+          <p class="description" style="margin-top:10px;">
+            <?php if (! empty($secStatus['captcha_installed'])) : ?>
+              <a href="<?php echo esc_url((string) $secStatus['captcha_url']); ?>" class="button button-small">تنظیمات کپچای ریاضی ↗</a>
+            <?php endif; ?>
+            <?php if (! empty($secStatus['novin_active'])) : ?>
+              <a href="<?php echo esc_url((string) $secStatus['novin_url']); ?>" class="button button-small">داشبورد Novin Security ↗</a>
+            <?php endif; ?>
+            <?php if (! empty($smsStatus['plugin_active'])) : ?>
+              <a href="<?php echo esc_url((string) $smsStatus['panel_url']); ?>" class="button button-small">پنل پیامک IPPanel Core ↗</a>
+            <?php endif; ?>
+          </p>
+        </div>
+
+        <div class="laico-card">
           <h2>ذخیره‌سازی سرور، اعلان ایمیلی/تلگرامی و امنیت ضد اسپم فرم‌ها</h2>
-          <p class="description">تمامی فرم‌های مشاوره در صفحات سایت از طریق REST API (همراه با پشتیبان Admin-AJAX) در جدول اختصاصی پایگاه‌داده ذخیره می‌شوند و در بخش <a href="<?php echo esc_url(admin_url('admin.php?page=laico-submissions')); ?>"><strong>ارسالی‌های فرم</strong></a> قابل مشاهده و خروجی اکسل هستند.</p>
+          <p class="description">تمامی فرم‌های مشاوره در صفحات سایت پس از بررسی توکن CSRF، لیست سیاه IP نوین سکیوریتی و کپچای ریاضی در جدول اختصاصی پایگاه‌داده ذخیره می‌شوند و در بخش <a href="<?php echo esc_url(admin_url('admin.php?page=laico-submissions')); ?>"><strong>ارسالی‌های فرم</strong></a> قابل مشاهده و خروجی اکسل هستند.</p>
 
           <div class="laico-checkbox-list" style="margin-top:12px;">
             <label class="laico-toggle-row">
@@ -743,6 +807,101 @@ final class ThemeSettingsPage
             <div class="laico-meta-field laico-en-only-field" <?php echo empty($opt['enable_english']) ? 'style="display:none;"' : ''; ?>>
               <label><strong>متن پیام موفقیت ثبت فرم (انگلیسی)</strong></label>
               <input type="text" name="laico_opt[form_success_body_en]" value="<?php echo esc_attr((string) $opt['form_success_body_en']); ?>" class="widefat" dir="ltr">
+            </div>
+          </div>
+        </div>
+
+        <div class="laico-card">
+          <h2>📱 اتصال به افزونه مرجع IPPanel Core (ارسال پیامک پترنی و دستی به مدیر و مشتری)</h2>
+          <p class="description">
+            قالب لایکو دیزاین به‌صورت خودکار با کد شناسایی <code dir="ltr"><?php echo esc_html((string) $smsStatus['integration_code']); ?></code> و اسلاگ <code dir="ltr"><?php echo esc_html((string) $smsStatus['slug']); ?></code> در رجیستری <strong>IPPanel Core</strong> ثبت می‌شود.
+            کافی است در منوی <strong>پیامک IPPanel ← دسترسی افزونه‌ها</strong> گزینهٔ «قالب لایکو دیزاین» را انتخاب و روی «ایجاد کلید دسترسی» کلیک کنید تا توکن به‌صورت خودکار دریافت و ذخیره شود.
+          </p>
+
+          <div class="laico-meta-grid laico-meta-grid--2col" style="margin-top:14px;">
+            <div class="laico-meta-field">
+              <label><strong>توکن دسترسی IPPanel Core (دریافت خودکار یا ورود دستی اختیاری)</strong></label>
+              <input type="text" name="laico_opt[sms_ippanel_token]" value="<?php echo esc_attr((string) ($opt['sms_ippanel_token'] ?: $savedToken)); ?>" class="widefat" dir="ltr" placeholder="در صورت صدور کلید از IPPanel Core به‌طور خودکار پر می‌شود">
+            </div>
+            <div class="laico-meta-field">
+              <label><strong>متغیرهای قابل استفاده در پیامک‌ها</strong></label>
+              <p class="description" style="margin:6px 0 0;line-height:1.8;">
+                <code>{id}</code> کد پیگیری &nbsp;|&nbsp;
+                <code>{name}</code> نام مشتری &nbsp;|&nbsp;
+                <code>{phone_local}</code> موبایل مشتری (09...) &nbsp;|&nbsp;
+                <code>{project_type}</code> نوع پروژه &nbsp;|&nbsp;
+                <code>{source_page}</code> صفحهٔ فرم &nbsp;|&nbsp;
+                <code>{message}</code> متن پیام &nbsp;|&nbsp;
+                <code>{date}</code> تاریخ شمسی
+              </p>
+            </div>
+          </div>
+
+          <hr style="margin:22px 0;border:0;border-top:1px solid #e2e8f0;">
+
+          <h3 style="margin-top:0;">۱. پیامک اطلاع‌رسانی به مدیر سایت (Admin SMS)</h3>
+          <label class="laico-toggle-row" style="margin-bottom:14px;">
+            <input type="checkbox" name="laico_opt[sms_admin_enable]" value="1" <?php checked(! empty($opt['sms_admin_enable'])); ?>>
+            <span><strong>فعال‌سازی ارسال پیامک به مدیر سایت بلافاصله پس از ثبت فرم مشاوره</strong></span>
+          </label>
+
+          <div class="laico-meta-grid laico-meta-grid--2col">
+            <div class="laico-meta-field">
+              <label><strong>شماره موبایل مدیر (یا چند شماره با کاما <code>,</code>)</strong></label>
+              <input type="text" name="laico_opt[sms_admin_phones]" value="<?php echo esc_attr((string) $opt['sms_admin_phones']); ?>" class="widefat" dir="ltr" placeholder="مثلاً: 09120898938, 0911... (در صورت خالی بودن از شماره اصلی سایت استفاده می‌شود)">
+            </div>
+            <div class="laico-meta-field">
+              <label><strong>نوع ارسال پیامک مدیر</strong></label>
+              <select name="laico_opt[sms_admin_mode]" class="widefat" data-sms-mode-select="admin">
+                <option value="pattern" <?php selected((string) ($opt['sms_admin_mode'] ?? 'pattern'), 'pattern'); ?>>ارسال سریع با پترن / الگو (Pattern SMS)</option>
+                <option value="text" <?php selected((string) ($opt['sms_admin_mode'] ?? 'pattern'), 'text'); ?>>ارسال پیامک متنی دستی (خط خدماتی / تبلیغاتی)</option>
+              </select>
+            </div>
+
+            <div class="laico-meta-field" data-sms-mode-panel="admin:pattern" <?php echo (($opt['sms_admin_mode'] ?? 'pattern') !== 'pattern') ? 'style="display:none;"' : ''; ?>>
+              <label><strong>کد پترن (Pattern Code) مدیر در IPPanel</strong></label>
+              <input type="text" name="laico_opt[sms_admin_pattern_code]" value="<?php echo esc_attr((string) $opt['sms_admin_pattern_code']); ?>" class="widefat" dir="ltr" placeholder="مثلاً: k8m2p9x1ab">
+            </div>
+            <div class="laico-meta-field" data-sms-mode-panel="admin:pattern" <?php echo (($opt['sms_admin_mode'] ?? 'pattern') !== 'pattern') ? 'style="display:none;"' : ''; ?>>
+              <label><strong>متغیرهای پترن مدیر (هر خط به صورت <code>نام_متغیر={مقدار}</code>)</strong></label>
+              <textarea name="laico_opt[sms_admin_pattern_vars]" rows="4" class="widefat" dir="ltr"><?php echo esc_textarea((string) $opt['sms_admin_pattern_vars']); ?></textarea>
+            </div>
+
+            <div class="laico-meta-field" style="grid-column: 1 / -1; <?php echo (($opt['sms_admin_mode'] ?? 'pattern') !== 'text') ? 'display:none;' : ''; ?>" data-sms-mode-panel="admin:text">
+              <label><strong>متن پیامک دستی برای مدیر</strong></label>
+              <textarea name="laico_opt[sms_admin_text_template]" rows="4" class="widefat"><?php echo esc_textarea((string) $opt['sms_admin_text_template']); ?></textarea>
+            </div>
+          </div>
+
+          <hr style="margin:22px 0;border:0;border-top:1px solid #e2e8f0;">
+
+          <h3 style="margin-top:0;">۲. پیامک تأیید ثبت درخواست به مشتری (Customer SMS)</h3>
+          <label class="laico-toggle-row" style="margin-bottom:14px;">
+            <input type="checkbox" name="laico_opt[sms_customer_enable]" value="1" <?php checked(! empty($opt['sms_customer_enable'])); ?>>
+            <span><strong>فعال‌سازی ارسال پیامک تشکر و کد پیگیری به شماره موبایل مشتری</strong></span>
+          </label>
+
+          <div class="laico-meta-grid laico-meta-grid--2col">
+            <div class="laico-meta-field">
+              <label><strong>نوع ارسال پیامک مشتری</strong></label>
+              <select name="laico_opt[sms_customer_mode]" class="widefat" data-sms-mode-select="customer">
+                <option value="pattern" <?php selected((string) ($opt['sms_customer_mode'] ?? 'pattern'), 'pattern'); ?>>ارسال سریع با پترن / الگو (Pattern SMS — پیشنهادی برای عبور از بلک‌لیست)</option>
+                <option value="text" <?php selected((string) ($opt['sms_customer_mode'] ?? 'pattern'), 'text'); ?>>ارسال پیامک متنی دستی</option>
+              </select>
+            </div>
+            <div class="laico-meta-field" data-sms-mode-panel="customer:pattern" <?php echo (($opt['sms_customer_mode'] ?? 'pattern') !== 'pattern') ? 'style="display:none;"' : ''; ?>>
+              <label><strong>کد پترن (Pattern Code) مشتری در IPPanel</strong></label>
+              <input type="text" name="laico_opt[sms_customer_pattern_code]" value="<?php echo esc_attr((string) $opt['sms_customer_pattern_code']); ?>" class="widefat" dir="ltr" placeholder="مثلاً: q4w9z7n2cd">
+            </div>
+
+            <div class="laico-meta-field" style="grid-column: 1 / -1; <?php echo (($opt['sms_customer_mode'] ?? 'pattern') !== 'pattern') ? 'display:none;' : ''; ?>" data-sms-mode-panel="customer:pattern">
+              <label><strong>متغیرهای پترن مشتری (هر خط به صورت <code>نام_متغیر={مقدار}</code>)</strong></label>
+              <textarea name="laico_opt[sms_customer_pattern_vars]" rows="3" class="widefat" dir="ltr"><?php echo esc_textarea((string) $opt['sms_customer_pattern_vars']); ?></textarea>
+            </div>
+
+            <div class="laico-meta-field" style="grid-column: 1 / -1; <?php echo (($opt['sms_customer_mode'] ?? 'pattern') !== 'text') ? 'display:none;' : ''; ?>" data-sms-mode-panel="customer:text">
+              <label><strong>متن پیامک دستی برای مشتری</strong></label>
+              <textarea name="laico_opt[sms_customer_text_template]" rows="3" class="widefat"><?php echo esc_textarea((string) $opt['sms_customer_text_template']); ?></textarea>
             </div>
           </div>
         </div>
@@ -1010,12 +1169,13 @@ final class ThemeSettingsPage
                 'opt_disable_xmlrpc', 'opt_remove_wp_version', 'opt_disable_self_pingbacks',
                 'opt_dequeue_jquery_migrate', 'opt_preload_fonts', 'opt_preload_hero',
                 'opt_defer_scripts', 'opt_zero_fouc_lang', 'opt_lazy_images', 'opt_instant_page_prefetch',
+                'opt_page_loader', 'opt_webp_uploads',
             ],
             'seo' => [
                 'seo_enable_builtin', 'seo_noindex_search', 'seo_noindex_author',
                 'seo_schema_org', 'seo_redirect_legacy_html',
             ],
-            'forms' => ['form_enable_email', 'form_store_ip'],
+            'forms' => ['form_enable_email', 'form_store_ip', 'sms_admin_enable', 'sms_customer_enable'],
             'patch' => ['patch_auto_backup', 'patch_require_signature'],
             default => [],
         };

@@ -12,26 +12,25 @@ use App\Services\ThemeOptions;
 use App\Support\ViteAssets;
 
 /**
- * Register theme assets on the frontend.
+ * Register theme assets on the frontend (zero external CDN dependencies).
  */
 add_action('wp_enqueue_scripts', static function (): void {
-    // Remix Icon stylesheet used by social & UI icons
-    wp_enqueue_style(
-        'laico-remixicon',
-        'https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css',
-        [],
-        '4.2.0'
-    );
-
     $cssUrl = ViteAssets::entryCss('resources/css/app.css');
     if ($cssUrl !== null) {
-        wp_enqueue_style('laico-styles', $cssUrl, ['laico-remixicon'], null);
+        wp_enqueue_style('laico-styles', $cssUrl, [], ViteAssets::assetVersion('resources/css/app.css'));
     }
 
     $jsUrl = ViteAssets::entryJs('resources/js/app.js');
     if ($jsUrl !== null) {
         $englishEnabled = ThemeOptions::isEnglishEnabled();
-        wp_enqueue_script('laico-app', $jsUrl, [], null, true);
+        $stealthLogin = (class_exists('NSH_Stealth') && method_exists('NSH_Stealth', 'login_slug'))
+            ? (string) \NSH_Stealth::login_slug()
+            : '';
+        $stealthAdmin = (class_exists('NSH_Stealth') && method_exists('NSH_Stealth', 'admin_slug'))
+            ? (string) \NSH_Stealth::admin_slug()
+            : '';
+
+        wp_enqueue_script('laico-app', $jsUrl, [], ViteAssets::assetVersion('resources/js/app.js'), true);
         wp_localize_script('laico-app', 'laicoConfig', [
             'restUrl' => esc_url_raw(rest_url('laico/v1/submissions')),
             'ajaxUrl' => admin_url('admin-ajax.php'),
@@ -39,6 +38,13 @@ add_action('wp_enqueue_scripts', static function (): void {
             'defaultLang' => $englishEnabled ? (string) ThemeOptions::get('default_language', 'fa') : 'fa',
             'enableLangSwitcher' => $englishEnabled,
             'prefetch' => (bool) ThemeOptions::get('opt_instant_page_prefetch', true),
+            'pageLoader' => (bool) ThemeOptions::get('opt_page_loader', true),
+            'excludePaths' => array_values(array_filter([
+                '/wp-admin',
+                '/wp-login',
+                $stealthLogin !== '' ? '/' . trim($stealthLogin, '/') : '',
+                $stealthAdmin !== '' ? '/' . trim($stealthAdmin, '/') : '',
+            ])),
             'i18n' => \App\Support\Bilingual::dictionary(),
         ]);
     }

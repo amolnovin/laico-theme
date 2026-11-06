@@ -38,7 +38,7 @@ final class Hero
                 'hint' => true,
             ],
             'services' => [
-                'fallback_image' => 'images/hero-services.jpg',
+                'fallback_image' => 'images/hero-services.webp',
                 'width' => 1376,
                 'height' => 768,
                 'kicker_fa' => 'خدمات',
@@ -52,7 +52,7 @@ final class Hero
                 'hint' => true,
             ],
             'projects' => [
-                'fallback_image' => 'images/hero-projects.jpg',
+                'fallback_image' => 'images/hero-projects.webp',
                 'width' => 1376,
                 'height' => 768,
                 'kicker_fa' => 'آرشیو پروژه‌ها',
@@ -66,7 +66,7 @@ final class Hero
                 'hint' => true,
             ],
             'journal' => [
-                'fallback_image' => 'images/hero-journal.jpg',
+                'fallback_image' => 'images/hero-journal.webp',
                 'width' => 1376,
                 'height' => 768,
                 'kicker_fa' => 'مجله لایکو',
@@ -80,7 +80,7 @@ final class Hero
                 'hint' => true,
             ],
             'about' => [
-                'fallback_image' => 'images/hero-about.jpg',
+                'fallback_image' => 'images/hero-about.webp',
                 'width' => 1376,
                 'height' => 768,
                 'kicker_fa' => 'درباره ما',
@@ -94,7 +94,7 @@ final class Hero
                 'hint' => true,
             ],
             'contact' => [
-                'fallback_image' => 'images/hero-contact.jpg',
+                'fallback_image' => 'images/hero-contact.webp',
                 'width' => 1376,
                 'height' => 768,
                 'kicker_fa' => 'تماس با ما',

@@ -61,21 +61,21 @@ final class DemoImporterService
         $pages = [
             // 6 Main Pages (Hero loaded from Featured Image!)
             ['slug' => 'home', 'title' => 'صفحه اصلی', 'template' => '', 'hero' => 'images/hero-main.webp'],
-            ['slug' => 'services', 'title' => 'خدمات', 'template' => 'template-services.blade.php', 'hero' => 'images/hero-services.jpg'],
-            ['slug' => 'projects', 'title' => 'پروژه‌ها', 'template' => 'template-projects.blade.php', 'hero' => 'images/hero-projects.jpg'],
-            ['slug' => 'journal', 'title' => 'مجله', 'template' => '', 'hero' => 'images/hero-journal.jpg'],
-            ['slug' => 'about', 'title' => 'درباره ما', 'template' => 'template-about.blade.php', 'hero' => 'images/hero-about.jpg'],
-            ['slug' => 'contact', 'title' => 'تماس با ما', 'template' => 'template-contact.blade.php', 'hero' => 'images/hero-contact.jpg'],
+            ['slug' => 'services', 'title' => 'خدمات', 'template' => 'template-services.blade.php', 'hero' => 'images/hero-services.webp'],
+            ['slug' => 'projects', 'title' => 'پروژه‌ها', 'template' => 'template-projects.blade.php', 'hero' => 'images/hero-projects.webp'],
+            ['slug' => 'journal', 'title' => 'مجله', 'template' => '', 'hero' => 'images/hero-journal.webp'],
+            ['slug' => 'about', 'title' => 'درباره ما', 'template' => 'template-about.blade.php', 'hero' => 'images/hero-about.webp'],
+            ['slug' => 'contact', 'title' => 'تماس با ما', 'template' => 'template-contact.blade.php', 'hero' => 'images/hero-contact.webp'],
             // Inner Collection & Info Pages
-            ['slug' => 'kitchen', 'title' => 'آشپزخانه', 'template' => 'template-collection.blade.php', 'hero' => 'images/hero.jpg'],
-            ['slug' => 'living', 'title' => 'پذیرایی و اتاق خواب', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-living.jpg'],
-            ['slug' => 'bath', 'title' => 'سرویس و حمام', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-bath.jpg'],
-            ['slug' => 'cafe', 'title' => 'کافه و رستوران', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-cafe.jpg'],
-            ['slug' => 'studio', 'title' => 'استودیو', 'template' => 'template-collection.blade.php', 'hero' => 'images/about-team.jpg'],
-            ['slug' => 'systems', 'title' => 'سیستم‌ها', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-kitchen.jpg'],
-            ['slug' => 'process', 'title' => 'فرآیند طراحی و ساخت', 'template' => 'template-collection.blade.php', 'hero' => 'images/jr-plan.jpg'],
-            ['slug' => 'materials', 'title' => 'متریال و جزئیات', 'template' => 'template-collection.blade.php', 'hero' => 'images/detail.jpg'],
-            ['slug' => 'showroom', 'title' => 'شو روم', 'template' => 'template-showroom.blade.php', 'hero' => 'images/pj-pars.jpg'],
+            ['slug' => 'kitchen', 'title' => 'آشپزخانه', 'template' => 'template-collection.blade.php', 'hero' => 'images/hero.webp'],
+            ['slug' => 'living', 'title' => 'پذیرایی و اتاق خواب', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-living.webp'],
+            ['slug' => 'bath', 'title' => 'سرویس و حمام', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-bath.webp'],
+            ['slug' => 'cafe', 'title' => 'کافه و رستوران', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-cafe.webp'],
+            ['slug' => 'studio', 'title' => 'استودیو', 'template' => 'template-collection.blade.php', 'hero' => 'images/about-team.webp'],
+            ['slug' => 'systems', 'title' => 'سیستم‌ها', 'template' => 'template-collection.blade.php', 'hero' => 'images/col-kitchen.webp'],
+            ['slug' => 'process', 'title' => 'فرآیند طراحی و ساخت', 'template' => 'template-collection.blade.php', 'hero' => 'images/jr-plan.webp'],
+            ['slug' => 'materials', 'title' => 'متریال و جزئیات', 'template' => 'template-collection.blade.php', 'hero' => 'images/detail.webp'],
+            ['slug' => 'showroom', 'title' => 'شو روم', 'template' => 'template-showroom.blade.php', 'hero' => 'images/pj-pars.webp'],
             ['slug' => 'privacy', 'title' => 'حریم خصوصی', 'template' => 'template-legal.blade.php', 'hero' => ''],
             ['slug' => 'cookies', 'title' => 'کوکی‌ها', 'template' => 'template-legal.blade.php', 'hero' => ''],
         ];
@@ -143,8 +143,8 @@ final class DemoImporterService
                     ['پروژه کوهستانی فیروزکوه بر پایهٔ هم‌نشینی سنگ بومی، چوب فرآوری‌شده و قاب‌های بزرگ شیشه‌ای رو به دره طراحی شد.', 'The Firouzkuh residence pairs local stone, thermally treated timber and wide glazed frames facing the valley.'],
                     ['جزئیات آب‌بندی نما و عایق‌بندی حرارتی به‌گونه‌ای اجرا شد که آرامش فضای داخلی در تمام فصول حفظ شود.', 'Envelope detailing and thermal insulation keep the interior serene through harsh mountain winters.'],
                 ],
-                'cover' => 'images/firouzkuh.jpeg',
-                'gallery' => ['images/firouzkuh.jpeg', 'images/pj-lavasan.jpg', 'images/detail.jpg', 'images/jr-lighting.jpg'],
+                'cover' => 'images/firouzkuh.webp',
+                'gallery' => ['images/firouzkuh.webp', 'images/pj-lavasan.webp', 'images/detail.webp', 'images/jr-lighting.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -159,8 +159,8 @@ final class DemoImporterService
                     ['در کافه آمل، کانتر اصلی به‌عنوان قلب عملکردی فضا طراحی شد تا سرویس‌دهی سریع بدون تداخل با مسیر نشستن مهمانان انجام شود.', 'In Amol Café, the central bar anchors workflow so rapid service never crosses guest seating paths.'],
                     ['ترکیب چوب طبیعی، رنگ سرمه‌ای امضای لایکو و کنترل آکوستیک سقف، فضایی صمیمی برای گفت‌وگو ساخته است.', 'Natural timber, signature Laico navy surfaces and ceiling acoustics create an intimate setting for conversation.'],
                 ],
-                'cover' => 'images/cafe-amol.jpeg',
-                'gallery' => ['images/cafe-amol.jpeg', 'images/col-cafe.jpg', 'images/proj-acajou.jpg', 'images/detail.jpg'],
+                'cover' => 'images/cafe-amol.webp',
+                'gallery' => ['images/cafe-amol.webp', 'images/col-cafe.webp', 'images/proj-acajou.webp', 'images/detail.webp'],
                 'video' => $videoCom,
             ],
             [
@@ -175,8 +175,8 @@ final class DemoImporterService
                     ['طراحی باشگاه با هدف فاصله گرفتن از فضاهای شلوغ مرسوم و خلق یک محیط تمرینی متمرکز و باکیفیت شکل گرفت.', 'This athletic space moves away from visual clutter toward a focused, architectural training environment.'],
                     ['کف‌پوش‌های جاذب ضربه، آینه‌های قدی بدون قاب و نور خطی سقفی، انرژی فضا را بدون خستگی چشم حفظ می‌کنند.', 'Shock-absorbing floors, frameless full-height mirrors and linear ceiling slots sustain energy without visual fatigue.'],
                 ],
-                'cover' => 'images/gym.jpeg',
-                'gallery' => ['images/gym.jpeg', 'images/services-sport.jpg', 'images/pj-noor.jpg', 'images/jr-lighting.jpg'],
+                'cover' => 'images/gym.webp',
+                'gallery' => ['images/gym.webp', 'images/services-sport.webp', 'images/pj-noor.webp', 'images/jr-lighting.webp'],
                 'video' => $videoCom,
             ],
             [
@@ -191,8 +191,8 @@ final class DemoImporterService
                     ['در مهد کودک نقش دوزک، تمام ارتفاع قفسه‌ها، دستگیره‌ها و پنجره‌ها بر اساس ارگونومی و دید کودک طراحی و در کارگاه لایکو ساخته شد.', 'Every shelf height, handle and window sill was scaled to children’s ergonomics and custom-built in the Laico workshop.'],
                     ['استفاده از پوشش‌های غیرسمی و لبه‌های گردشده، امنیت و آزادی حرکت کودکان را هم‌زمان تضمین می‌کند.', 'Non-toxic finishes and radiused timber edges ensure safety while encouraging free movement and play.'],
                 ],
-                'cover' => 'images/kindergarten.jpeg',
-                'gallery' => ['images/kindergarten.jpeg', 'images/jr-plan.jpg', 'images/col-living.jpg', 'images/detail.jpg'],
+                'cover' => 'images/kindergarten.webp',
+                'gallery' => ['images/kindergarten.webp', 'images/jr-plan.webp', 'images/col-living.webp', 'images/detail.webp'],
                 'video' => $videoCom,
             ],
             [
@@ -207,8 +207,8 @@ final class DemoImporterService
                     ['پنت‌هاوس آفتاب برای یک خانوادهٔ چهارنفره طراحی شد. جزیره هم میز کار است و هم میز صبحانه. صفحهٔ سنگ از کف جزیره بالا می‌آید و درز افقی حذف شده.', 'Penthouse Aftab was planned for a family of four. The island is both worktop and breakfast table. Stone rises from the floor of the island; the horizontal joint is gone.'],
                     ['قفسه‌های باز فقط برای چیزهایی‌اند که هر روز استفاده می‌شوند. بقیه پشت درِ بدون دستگیره است.', 'Open shelves hold only what is used every day. Everything else sits behind a handleless door.'],
                 ],
-                'cover' => 'images/proj-aftab.jpg',
-                'gallery' => ['images/hero.jpg', 'images/col-kitchen.jpg', 'images/detail.jpg', 'images/pj-baran.jpg'],
+                'cover' => 'images/proj-aftab.webp',
+                'gallery' => ['images/hero.webp', 'images/col-kitchen.webp', 'images/detail.webp', 'images/pj-baran.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -223,8 +223,8 @@ final class DemoImporterService
                     ['ویلای هراز بازسازی کامل نشیمن و اتاق‌ها بود. دیوار سنگی موجود ماند. نور از یک شکاف سقفی می‌آید، نه از لوستر.', 'Villa Haraz was a full remake of the living room and bedrooms. The existing stone wall stayed. Light comes from a ceiling slot, not a chandelier.'],
                     ['کمدها با سیستم لایکو ساخته شدند تا با آشپزخانهٔ خانه هم‌زبان باشند.', 'Wardrobes were built on the Laico system so they share a language with the kitchen.'],
                 ],
-                'cover' => 'images/proj-haraz.jpg',
-                'gallery' => ['images/pj-lavasan.jpg', 'images/col-living.jpg', 'images/jr-lighting.jpg', 'images/pj-sabz.jpg'],
+                'cover' => 'images/proj-haraz.webp',
+                'gallery' => ['images/pj-lavasan.webp', 'images/col-living.webp', 'images/jr-lighting.webp', 'images/pj-sabz.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -239,8 +239,8 @@ final class DemoImporterService
                     ['اکاژو یک کافهٔ روزانه است، نه یک فضای نمایشی. پیشخوان برای کار باریستا عمق کافی دارد و مهمان مسیر جداگانه‌ای دارد.', 'Acajou is a daily café, not a showroom. The counter is deep enough for the barista, and the guest has a separate path.'],
                     ['دیوار چوب‌کوب صدا را می‌گیرد. آویزها پایین‌اند تا میز، نه سقف، روشن باشد.', 'The timber wall takes the sound. Pendants hang low so the table is lit, not the ceiling.'],
                 ],
-                'cover' => 'images/proj-acajou.jpg',
-                'gallery' => ['images/col-cafe.jpg', 'images/pj-pars.jpg', 'images/detail.jpg', 'images/jr-lighting.jpg'],
+                'cover' => 'images/proj-acajou.webp',
+                'gallery' => ['images/col-cafe.webp', 'images/pj-pars.webp', 'images/detail.webp', 'images/jr-lighting.webp'],
                 'video' => $videoCom,
             ],
             [
@@ -255,8 +255,8 @@ final class DemoImporterService
                     ['خانهٔ دریا حمام اصلی یک ویلای کوچک است. وان مرکز اتاق است. کابینت سرمه‌ای همان سیستم آشپزخانهٔ لایکو است.', 'House Darya is the main bath of a small villa. The tub is the centre of the room. The navy cabinet is the Laico kitchen system.'],
                     ['پنجره‌ای رو به حیاط نور را نرم می‌کند. هیچ نور نقطه‌ای تندی بالای آینه نیست.', 'A window to the court softens the light. There is no hard spotlight over the mirror.'],
                 ],
-                'cover' => 'images/proj-darya.jpg',
-                'gallery' => ['images/col-bath.jpg', 'images/pj-mehr.jpg', 'images/detail.jpg', 'images/jr-door.jpg'],
+                'cover' => 'images/proj-darya.webp',
+                'gallery' => ['images/col-bath.webp', 'images/pj-mehr.webp', 'images/detail.webp', 'images/jr-door.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -271,8 +271,8 @@ final class DemoImporterService
                     ['مجتمع آفتاب ترکیبی از خرده‌فروشی، رستوران و فضای تفریحی است. طراحی داخلی و نما با یک زبان واحد انجام شد.', 'Aftab combines retail, restaurants and leisure. Interior and facade were designed in one language.'],
                     ['مسیر پیاده بدون پله و روشنایی خطی، جریان مشتری را بدون تابلوی اضافه هدایت می‌کند.', 'A step-free route and linear lighting guide visitors without extra signage.'],
                 ],
-                'cover' => 'images/projects-card.jpg',
-                'gallery' => ['images/pj-pars.jpg', 'images/pj-noor.jpg', 'images/services-sport.jpg', 'images/services-clinic.jpg'],
+                'cover' => 'images/projects-card.webp',
+                'gallery' => ['images/pj-pars.webp', 'images/pj-noor.webp', 'images/services-sport.webp', 'images/services-clinic.webp'],
                 'video' => $videoCom,
             ],
             [
@@ -287,8 +287,8 @@ final class DemoImporterService
                     ['آپارتمان سبز با پلانی باز و یک دیوار کتابخانه‌ای بازطراحی شد. پنجره‌های بزرگ بالکن، نور روز را تا انتهای اتاق می‌برند.', 'Sabz was re-planned as one open room with a bookcase wall. Large balcony windows carry daylight to the back of the room.'],
                     ['کف چوب روشن و مبلمان کم‌حجم فضا را آرام نگه می‌دارند.', 'A pale timber floor and low-volume furniture keep the space calm.'],
                 ],
-                'cover' => 'images/pj-sabz.jpg',
-                'gallery' => ['images/pj-lavasan.jpg', 'images/col-living.jpg', 'images/jr-lighting.jpg', 'images/jr-door.jpg'],
+                'cover' => 'images/pj-sabz.webp',
+                'gallery' => ['images/pj-lavasan.webp', 'images/col-living.webp', 'images/jr-lighting.webp', 'images/jr-door.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -303,8 +303,8 @@ final class DemoImporterService
                     ['حمام مهر یک فضای کوچک است که با سنگ یکپارچه بزرگ‌تر دیده می‌شود. آینهٔ پشت‌نورخورده نور نرم و بدون سایه می‌دهد.', 'Mehr is a small room that reads larger in continuous stone. A backlit mirror gives soft, shadow-free light.'],
                     ['کابینت معلق باعث می‌شود کف دیده شود و نظافت راحت‌تر باشد.', 'A floating vanity keeps the floor visible and cleaning easy.'],
                 ],
-                'cover' => 'images/pj-mehr.jpg',
-                'gallery' => ['images/col-bath.jpg', 'images/proj-darya.jpg', 'images/detail.jpg', 'images/jr-door.jpg'],
+                'cover' => 'images/pj-mehr.webp',
+                'gallery' => ['images/col-bath.webp', 'images/proj-darya.webp', 'images/detail.webp', 'images/jr-door.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -319,8 +319,8 @@ final class DemoImporterService
                     ['در باران، آشپزخانه به ناهارخوری باز می‌شود. جزیره مرز نرمی میان آشپزی و نشستن ایجاد می‌کند.', 'At Baran the kitchen opens onto dining. The island is a soft border between cooking and sitting.'],
                     ['قفسه‌های باز بالای کانتر، ظرف‌های روزانه را در دسترس نگه می‌دارند.', 'Open shelves above the counter keep daily dishes within reach.'],
                 ],
-                'cover' => 'images/pj-baran.jpg',
-                'gallery' => ['images/hero.jpg', 'images/col-kitchen.jpg', 'images/proj-aftab.jpg', 'images/detail.jpg'],
+                'cover' => 'images/pj-baran.webp',
+                'gallery' => ['images/hero.webp', 'images/col-kitchen.webp', 'images/proj-aftab.webp', 'images/detail.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -335,8 +335,8 @@ final class DemoImporterService
                     ['ویلای لواسان حول یک سالن دو ارتفاعه طراحی شد. سقف چوبی و دیوار سرمه‌ای، قاب آرامی برای نمای باغ می‌سازند.', 'Villa Lavasan was planned around a double-height hall. A timber ceiling and a navy wall frame the garden quietly.'],
                     ['نور غیرمستقیم در لبهٔ سقف، سایه‌ها را نرم می‌کند و ارتفاع فضا را حفظ می‌کند.', 'Indirect light at the ceiling edge softens shadows and keeps the height of the room.'],
                 ],
-                'cover' => 'images/pj-lavasan.jpg',
-                'gallery' => ['images/pj-sabz.jpg', 'images/jr-lighting.jpg', 'images/col-living.jpg', 'images/jr-door.jpg'],
+                'cover' => 'images/pj-lavasan.webp',
+                'gallery' => ['images/pj-sabz.webp', 'images/jr-lighting.webp', 'images/col-living.webp', 'images/jr-door.webp'],
                 'video' => $videoRes,
             ],
             [
@@ -351,8 +351,8 @@ final class DemoImporterService
                     ['لابی پارس اولین برداشت شرکت از خودش است؛ پس مینیمال و بدون تزئین طراحی شد. پانل چوبی صدا را کنترل می‌کند.', "The Pars lobby is the company's first impression, so it was kept minimal and unadorned. A timber panel controls sound."],
                     ['مبلمان از جنس طبیعی انتخاب شد تا با گذر زمان خوش‌ظاهر بماند.', 'Furniture was chosen in natural materials that age well.'],
                 ],
-                'cover' => 'images/pj-pars.jpg',
-                'gallery' => ['images/pj-noor.jpg', 'images/jr-lighting.jpg', 'images/services-clinic.jpg', 'images/detail.jpg'],
+                'cover' => 'images/pj-pars.webp',
+                'gallery' => ['images/pj-noor.webp', 'images/jr-lighting.webp', 'images/services-clinic.webp', 'images/detail.webp'],
                 'video' => $videoCom,
             ],
             [
@@ -367,8 +367,8 @@ final class DemoImporterService
                     ['استودیو نور برای تیمی هشت‌نفره طراحی شد. میز بلند مرکزی هم میز جلسه است و هم میز ماکت.', 'Noor was designed for a team of eight. The long central table is both meeting table and model bench.'],
                     ['دیوار نمونه‌ها و قفسهٔ سرمه‌ای، آرشیو متریال را همیشه در دسترس نگه می‌دارد.', 'A sample wall and a navy shelf keep the material archive always in reach.'],
                 ],
-                'cover' => 'images/pj-noor.jpg',
-                'gallery' => ['images/pj-pars.jpg', 'images/jr-plan.jpg', 'images/detail.jpg', 'images/proj-acajou.jpg'],
+                'cover' => 'images/pj-noor.webp',
+                'gallery' => ['images/pj-pars.webp', 'images/jr-plan.webp', 'images/detail.webp', 'images/proj-acajou.webp'],
                 'video' => $videoCom,
             ],
         ];
@@ -448,7 +448,7 @@ final class DemoImporterService
     {
         $articles = [
             [
-                'slug' => 'honest-materials', 'date' => '2026-10-12 10:00:00', 'read' => 4, 'image' => 'images/detail.jpg',
+                'slug' => 'honest-materials', 'date' => '2026-10-12 10:00:00', 'read' => 4, 'image' => 'images/detail.webp',
                 'cat' => ['متریال', 'Materials', 'materials'],
                 'title' => ['متریال صادق یعنی چه؟', 'What honest material means'],
                 'excerpt' => ['سنگی که سنگ است، چوبی که چوب است، و لاکی که ادای سنگ را درنمی‌آورد.', 'Stone that is stone, timber that is timber, and lacquer that does not pretend to be stone.'],
@@ -456,7 +456,7 @@ final class DemoImporterService
                 'body_en' => '<p>At Laico a finish is not there to imitate something else. Matt lacquer is lacquer. Beech is beech. Stone has its own vein and we do not flatten it to look “cleaner”.</p><h2>Why imitation costs more</h2><p>An imitation looks right on day one, but by year three the edges, the light and the touch give it away. An honest material ages better, or at least predictably.</p><blockquote>A material that does not pretend to be something else never goes out of fashion.</blockquote><h2>Three rules for choosing</h2><p>First, pick a surface that can be repaired. Second, treat vein and grain as part of the design, not a flaw. Third, never use more than three main materials in one room.</p>',
             ],
             [
-                'slug' => 'invisible-joints', 'date' => '2026-09-02 10:00:00', 'read' => 3, 'image' => 'images/jr-door.jpg',
+                'slug' => 'invisible-joints', 'date' => '2026-09-02 10:00:00', 'read' => 3, 'image' => 'images/jr-door.webp',
                 'cat' => ['ساخت', 'Craft', 'craft'],
                 'title' => ['درزهایی که نباید دیده شوند', 'Joints that should not be seen'],
                 'excerpt' => ['تلورانس زیر یک میلی‌متر یک شعار نیست؛ یک عدد کارگاهی است.', 'A tolerance under one millimetre is not a slogan. It is a workshop number.'],
@@ -464,7 +464,7 @@ final class DemoImporterService
                 'body_en' => '<p>A joint shows where the error is. If two doors differ by more than a millimetre, the shadow gives it away.</p><h2>A trial assembly in the workshop</h2><p>That is why every system is fully assembled in the workshop before shipping. Levels, hinges and runners are set there, not in the client’s home.</p><blockquote>A good joint is one nobody talks about.</blockquote><h2>Installation, the last ten percent</h2><p>Installation is not just moving boxes; final levelling and door adjustment are done by laser so the joints run along a single line.</p>',
             ],
             [
-                'slug' => 'showroom-visit', 'date' => '2026-07-21 10:00:00', 'read' => 3, 'image' => 'images/pj-pars.jpg',
+                'slug' => 'showroom-visit', 'date' => '2026-07-21 10:00:00', 'read' => 3, 'image' => 'images/pj-pars.webp',
                 'cat' => ['شو روم', 'Showroom', 'showroom-cat'],
                 'title' => ['چرا بازدید شو روم اجباری است', 'Why the showroom visit is required'],
                 'excerpt' => ['رنگ روی صفحه، رنگ در اتاق نیست. پالت باید لمس شود.', 'Colour on a screen is not colour in a room. A palette has to be touched.'],
@@ -472,7 +472,7 @@ final class DemoImporterService
                 'body_en' => '<p>A matt lacquer sample under north light differs from its photograph. Colour on a screen is not colour in a room.</p><h2>The palette has to be touched</h2><p>In Amol, Darya 20, we lay the palette side by side and compare it in natural light. Only after this visit does the order go to the workshop.</p><blockquote>A decision made by hand carries less regret.</blockquote><h2>What to bring</h2><p>A plan or photos of the space, the approximate area and, if you have them, a few reference images. We settle the rest at the first meeting.</p>',
             ],
             [
-                'slug' => 'light-first', 'date' => '2026-05-30 10:00:00', 'read' => 5, 'image' => 'images/jr-lighting.jpg',
+                'slug' => 'light-first', 'date' => '2026-05-30 10:00:00', 'read' => 5, 'image' => 'images/jr-lighting.webp',
                 'cat' => ['طراحی', 'Design', 'design'],
                 'title' => ['نور، اولین متریال هر فضا', 'Light, the first material of every room'],
                 'excerpt' => ['نور فقط دیدن را ممکن نمی‌کند؛ حجم، رنگ و حال‌وهوای اتاق را می‌سازد.', 'Light does not just make seeing possible; it builds the volume, colour and mood of a room.'],
@@ -480,7 +480,7 @@ final class DemoImporterService
                 'body_en' => '<p>Light does not just make seeing possible; it builds the volume, colour and mood of a room. That is why we start the lighting design before choosing furniture.</p><h2>Three layers of light</h2><p>Soft general light, task light for working surfaces, and accent light for textures. All three must be controlled separately.</p><blockquote>If you can see the bulb, the lighting design has failed.</blockquote><h2>The colour of light</h2><p>For navy and timber rooms, 2700 to 3000 K works best; for kitchens and bathrooms, up to 3500 K.</p>',
             ],
             [
-                'slug' => 'plan-before-colour', 'date' => '2026-04-11 10:00:00', 'read' => 4, 'image' => 'images/jr-plan.jpg',
+                'slug' => 'plan-before-colour', 'date' => '2026-04-11 10:00:00', 'read' => 4, 'image' => 'images/jr-plan.webp',
                 'cat' => ['طراحی', 'Design', 'design'],
                 'title' => ['پلان پیش از رنگ', 'Plan before colour'],
                 'excerpt' => ['رنگ آخرین تصمیم است؛ ساخت، اولین تعهد.', 'Colour is the last decision; building is the first commitment.'],
@@ -488,7 +488,7 @@ final class DemoImporterService
                 'body_en' => '<p>Plan, light and working path are settled before colour. Colour is the last decision; building is the first commitment.</p><h2>Start with the path</h2><p>Before choosing anything, draw the residents’ daily path on the plan: from the entrance to the kitchen, from the bedroom to the bath.</p><blockquote>A good plan survives a bad colour; the reverse is not true.</blockquote><h2>First-meeting checklist</h2><p>Area and height, position of natural light, fixed services and daily habits. With these four, a concept can be ready within a week.</p>',
             ],
             [
-                'slug' => 'working-kitchen', 'date' => '2026-02-12 10:00:00', 'read' => 4, 'image' => 'images/hero.jpg',
+                'slug' => 'working-kitchen', 'date' => '2026-02-12 10:00:00', 'read' => 4, 'image' => 'images/hero.webp',
                 'cat' => ['آشپزخانه', 'Kitchen', 'kitchen-cat'],
                 'title' => ['آشپزخانه‌ای که واقعاً کار می‌کند', 'A kitchen that actually works'],
                 'excerpt' => ['آشپزخانهٔ زیبا اگر مسیر کار نداشته باشد، بعد از یک ماه خسته‌کننده می‌شود.', 'A beautiful kitchen with no working path becomes tiresome after a month.'],
@@ -629,7 +629,7 @@ final class DemoImporterService
         $filetype = wp_check_filetype($filename, null);
         $attachment = [
             'guid' => trailingslashit((string) $uploads['url']) . $filename,
-            'post_mime_type' => $filetype['type'] ?: 'image/jpeg',
+            'post_mime_type' => $filetype['type'] ?: 'image/webp',
             'post_title' => $title,
             'post_content' => '',
             'post_status' => 'inherit',

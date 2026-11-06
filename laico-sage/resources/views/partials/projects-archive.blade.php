@@ -10,6 +10,9 @@
     ['slug' => 'bath', 'fa' => 'حمام', 'en' => 'Bath'],
     ['slug' => 'office', 'fa' => 'اداری و درمانی', 'en' => 'Office & clinic'],
     ['slug' => 'hall', 'fa' => 'کافه و رستوران', 'en' => 'Café & restaurant'],
+    ['slug' => 'architecture', 'fa' => 'نما و محوطه', 'en' => 'Architecture & facade'],
+    ['slug' => 'educational', 'fa' => 'آموزشی', 'en' => 'Educational'],
+    ['slug' => 'sports', 'fa' => 'ورزشی و سلامت', 'en' => 'Sports & wellness'],
   ];
 
   $cities = !empty($filterTerms['cities']) ? $filterTerms['cities'] : [

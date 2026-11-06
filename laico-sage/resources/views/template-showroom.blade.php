@@ -39,7 +39,7 @@
         <p>{!! laico_bi('بازدید فقط با وقت قبلی است تا مشاور فنی همان روز کنار شما باشد.', 'Visits are by appointment so a technical consultant is with you that day.') !!}</p>
       </div>
       <div class="media-frame">
-        <img src="{{ esc_url(laico_asset('images/detail.jpg')) }}" alt="جزئیات متریال در شو روم لایکو" loading="lazy">
+        <img src="{{ esc_url(laico_asset('images/detail.webp')) }}" alt="جزئیات متریال در شو روم لایکو" loading="lazy">
       </div>
     </div>
   </section>
